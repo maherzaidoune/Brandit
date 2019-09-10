@@ -133,8 +133,8 @@ export default class LoginPage extends Component {
                     onClick={() => {
                       console.log('click');
                     }}
-                    isChecked={true}
-                    checkedCheckBoxColor={'#ee5384'}
+                    isChecked={false}
+                    checkedCheckBoxColor={'#80848A'}
                     uncheckedCheckBoxColor={'#80848A'}
                     checkBoxColor={'#fff'}
                   />
