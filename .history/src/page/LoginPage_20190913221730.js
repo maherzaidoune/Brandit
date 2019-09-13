@@ -16,13 +16,14 @@ const logo = require('../images/logo.png');
 const user = require('../images/user.png');
 
 export default class LoginPage extends Component {
-  constructor(props) {
+
+  constructor(props){
     super(props);
-    this.state = {
+    this.state={
       username: '',
       password: '',
-      rememberMe: false,
-    };
+      rememberMe: false
+    }
   }
   render() {
     return (
@@ -72,11 +73,9 @@ export default class LoginPage extends Component {
               marginRight: getSize(20),
             }}>
             <AuthInput
-              onChangeText={text =>
-                this.setState({
-                  username: text,
-                })
-              }
+              onChangeText={text => this.setState({
+                username: text
+              })}
               value={this.state.username}
               placeholder={'username'}
               keyboard={'default'}
@@ -85,11 +84,9 @@ export default class LoginPage extends Component {
               icon="user"
             />
             <AuthInput
-              onChangeText={text =>
-                this.setState({
-                  password: text,
-                })
-              }
+              onChangeText={text => this.setState({
+                password: text
+              })}
               value={this.state.password}
               placeholder={'password'}
               keyboard={'default'}
@@ -99,7 +96,7 @@ export default class LoginPage extends Component {
             />
 
             <TouchableOpacity
-              activeOpacity={0.7}
+            activeOpacity={0.7}
               style={{
                 borderRadius: 5,
                 backgroundColor: '#ee5384',
@@ -129,8 +126,8 @@ export default class LoginPage extends Component {
                 activeOpacity={0.7}
                 onPress={() => {
                   this.setState({
-                    rememberMe: !this.state.rememberMe,
-                  });
+                    rememberMe: !this.state.rememberMe
+                  })
                 }}
                 style={{
                   flex: 1,
@@ -154,10 +151,10 @@ export default class LoginPage extends Component {
                     }}
                     onClick={() => {
                       this.setState({
-                        rememberMe: !this.state.rememberMe,
-                      });
+                        rememberMe: !this.state.rememberMe
+                      })
                     }}
-                    isChecked={this.state.rememberMe}
+                    isChecked={this.stat.rememberMe}
                     checkedCheckBoxColor={'#ee5384'}
                     uncheckedCheckBoxColor={'#80848A'}
                     checkBoxColor={'#fff'}
@@ -174,7 +171,7 @@ export default class LoginPage extends Component {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
-                activeOpacity={0.7}
+              activeOpacity={0.7}
                 style={{
                   flex: 1,
                   flexDirection: 'row',
@@ -185,20 +182,20 @@ export default class LoginPage extends Component {
                   style={{
                     fontSize: getSize(12),
                     color: '#a5a6b0',
-                    fontStyle: 'italic',
+                    fontStyle: 'italic'
                   }}>
                   Forgot your password?
                 </Text>
               </TouchableOpacity>
             </View>
-            <Image
-              source={line}
-              style={{
-                height: getSize(1.5),
-                width: '100%',
-                marginTop: getSize(20),
-              }}
-            />
+            <Image 
+                source={line} 
+                style={{
+                  height: getSize(1.5),
+                  width: '100%',
+                  marginTop: getSize(20),
+                }}
+              />
           </View>
         </View>
       </ImageBackground>

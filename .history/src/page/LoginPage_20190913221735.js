@@ -157,7 +157,7 @@ export default class LoginPage extends Component {
                         rememberMe: !this.state.rememberMe,
                       });
                     }}
-                    isChecked={this.state.rememberMe}
+                    isChecked={this.stat.rememberMe}
                     checkedCheckBoxColor={'#ee5384'}
                     uncheckedCheckBoxColor={'#80848A'}
                     checkBoxColor={'#fff'}
