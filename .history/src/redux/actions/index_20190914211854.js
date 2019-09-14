@@ -1,0 +1,21 @@
+import {
+    LOGIN_USER,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_FAILED,
+} from './types';
+
+export const Login = (username, password) => {
+    return dispatch => {
+        dispatch({ type: LOGIN_USER });
+        axios
+          .post(`${urlGlobal}/member/auth`, loginParams, { timeout: 5000 })
+          .then(response => {
+            dispatch({ type: LOGIN_USER_SUCCESS, payload: response });
+            callback(response);
+          })
+          .catch(error => {
+            dispatch({ type: LOGIN_USER_FAILED, payload: error });
+            callbackError(error.response);
+          });
+      };
+}
