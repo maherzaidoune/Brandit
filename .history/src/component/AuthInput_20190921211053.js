@@ -73,4 +73,4 @@ const AuthInput = props => {
   );
 };
 
-export default React.memo(AuthInput);
+export default React.memo(AuthInput;

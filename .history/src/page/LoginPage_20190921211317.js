@@ -30,6 +30,7 @@ class LoginPage extends Component {
   }
 
   login = () => {
+
     if(this.state.username.length < 1){
       Snackbar.show({
         title: 'INVALID USERNAME',

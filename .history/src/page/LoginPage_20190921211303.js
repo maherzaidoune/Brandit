@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
 import {getSize} from '../utils/UiUtils';
-import AuthInput from '../component/AuthInput';
+// import AuthInput from '../component/AuthInput';
 import CheckBox from '../utils/react-native-check-box/index.js';
 import {connect} from 'react-redux';
 import {Login} from '../redux/actions';
@@ -30,6 +30,7 @@ class LoginPage extends Component {
   }
 
   login = () => {
+
     if(this.state.username.length < 1){
       Snackbar.show({
         title: 'INVALID USERNAME',
@@ -158,7 +159,7 @@ class LoginPage extends Component {
                 marginLeft: getSize(20),
                 marginRight: getSize(20),
               }}>
-              <AuthInput
+              {/* <AuthInput
                 onChangeText={text =>
                   this.setState({
                     username: text,
@@ -183,7 +184,7 @@ class LoginPage extends Component {
                 return={'next'}
                 secureTextEntry={true}
                 icon="lock1"
-              />
+              /> */}
 
               <TouchableOpacity
                 activeOpacity={0.7}
