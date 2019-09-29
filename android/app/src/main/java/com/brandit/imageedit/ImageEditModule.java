@@ -77,7 +77,6 @@ public class ImageEditModule extends ReactContextBaseJavaModule {
         intent.putExtra("selectedImagePath", path);
         try{
             ArrayList<String> Stickers = toArray(props.getArray("Stickers"));
-            Toast.makeText(getReactApplicationContext(), "Stickers : "+ toArray(props.getArray("Stickers")), Toast.LENGTH_SHORT).show();
             intent.putStringArrayListExtra("Stickers", Stickers);
         }catch (Exception e){
             e.printStackTrace();
