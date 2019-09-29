@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -72,8 +73,6 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private ConstraintSet mConstraintSet = new ConstraintSet();
     private boolean mIsFilterVisible;
     ArrayList<String> Stickers;
-    ArrayList<File> files;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,25 +87,10 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         try{
             if(getIntent().getExtras().getString("selectedImagePath") != null){
                 // mPhotoEditorView.getSource().setimage(photo);
-                Log.i("path", getIntent().getExtras().getString("selectedImagePath"));
                 Glide.with(this).load(getIntent().getExtras().getString("selectedImagePath")).into(mPhotoEditorView.getSource());
             }
             if(getIntent().getStringArrayListExtra("Stickers") != null){
                 Stickers = getIntent().getStringArrayListExtra("Stickers");
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (String s : Stickers) {
-                            try {
-                                File file = Glide.with(EditImageActivity.this).asFile().load(s).submit().get();
-                                files.add(file);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                thread.run();
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -115,8 +99,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         mPropertiesBSFragment = new PropertiesBSFragment();
         mEmojiBSFragment = new EmojiBSFragment();
-        Toast.makeText(getApplicationContext(), "files = " + files, Toast.LENGTH_SHORT).show();
-        mStickerBSFragment = new StickerBSFragment(Stickers, files);
+        mStickerBSFragment = new StickerBSFragment(Stickers);
         mStickerBSFragment.setStickerListener(this);
         mEmojiBSFragment.setEmojiListener(this);
         mPropertiesBSFragment.setPropertiesChangeListener(this);
@@ -130,14 +113,14 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         mRvFilters.setAdapter(mFilterViewAdapter);
 
 
-        //Typeface mTextRobotoTf = ResourcesCompat.getFont(this, R.font.roboto_medium);
-        //Typeface mEmojiTypeFace = Typeface.createFromAsset(getAssets(), "emojione-android.ttf");
+        Typeface mTextRobotoTf = ResourcesCompat.getFont(this, R.font.roboto_medium);
+        Typeface mEmojiTypeFace = Typeface.createFromAsset(getAssets(), "emojione-android.ttf");
 
 
         mPhotoEditor = new PhotoEditor.Builder(this, mPhotoEditorView)
                 .setPinchTextScalable(true) // set flag to make text scalable when pinch
-                //.setDefaultTextTypeface(mTextRobotoTf)
-                //.setDefaultEmojiTypeface(mEmojiTypeFace)
+                .setDefaultTextTypeface(mTextRobotoTf)
+                .setDefaultEmojiTypeface(mEmojiTypeFace)
                 .build(); // build photo editor sdk
 
         mPhotoEditor.setOnPhotoEditorListener(this);

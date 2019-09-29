@@ -2,6 +2,7 @@ package com.brandit.Editor;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -31,12 +32,33 @@ import javax.annotation.Nullable;
 public class StickerBSFragment extends BottomSheetDialogFragment {
 
     ArrayList<String> Stickers;
-    ArrayList<File> files;
+    ArrayList<Bitmap> bitmaps;
 
-    public StickerBSFragment(ArrayList<String> Stickers, ArrayList<File> files) {
+    public StickerBSFragment(ArrayList<String> Stickers) {
         // Required empty public constructor
         this.Stickers = Stickers;
-        this.files = files;
+        this.bitmaps = new ArrayList<>();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (String s: Stickers) {
+                    try {
+                        Bitmap bitmap = Glide.with(context).asBitmap().load(s).submit().get();
+                        bitmaps.add(bitmap);
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        thread.start();
     }
 
     private StickerListener mStickerListener;
@@ -82,7 +104,7 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
         rvEmoji.setLayoutManager(gridLayoutManager);
-        StickerAdapter stickerAdapter = new StickerAdapter(Stickers, files);
+        StickerAdapter stickerAdapter = new StickerAdapter(Stickers);
         rvEmoji.setAdapter(stickerAdapter);
     }
 
@@ -94,9 +116,8 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
 
     public class StickerAdapter extends RecyclerView.Adapter<StickerAdapter.ViewHolder> {
 
-        public StickerAdapter(ArrayList<String> stickerList, ArrayList<File> files) {
+        public StickerAdapter(ArrayList<String> stickerList) {
             this.stickerList = stickerList;
-            this.files = files;
         }
 
         ArrayList<String> stickerList;
@@ -130,8 +151,9 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onClick(View v) {
                         if (mStickerListener != null) {
-                            mStickerListener.onStickerClick(
-                                    BitmapFactory.decodeFile(files.get(getLayoutPosition()).getPath()));
+//                            mStickerListener.onStickerClick(
+//                                    BitmapFactory.decodeFile(files.get(getLayoutPosition()).getPath()));
+                             mStickerListener.onStickerClick(bitmaps.get(getLayoutPosition()));
                         }
                         dismiss();
                     }
