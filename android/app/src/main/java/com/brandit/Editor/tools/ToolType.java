@@ -6,5 +6,6 @@ public enum ToolType {
     ERASER,
     FILTER,
     EMOJI,
-    STICKER
+    STICKER,
+    FRAME
 }

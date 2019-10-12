@@ -261,6 +261,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 SaveSettings saveSettings = new SaveSettings.Builder()
                         .setClearViewsEnabled(true)
                         .setTransparencyEnabled(true)
+                        .setCompressQuality(1)
                         .build();
 
                 mPhotoEditor.saveAsFile(file.getAbsolutePath(), saveSettings, new PhotoEditor.OnSaveListener() {
@@ -477,6 +478,9 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 mEmojiBSFragment.show(getSupportFragmentManager(), mEmojiBSFragment.getTag());
                 break;
             case STICKER:
+                mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
+                break;
+            case FRAME:
                 mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
                 break;
         }

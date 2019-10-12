@@ -78,6 +78,7 @@ class MainPage extends Component {
       cameraType: 'back',
       mediaType: 'photo',
       allowsEditing: false,
+      allowsEditing: true,
       storageOptions: {
         waitUntilSaved: true,
       },

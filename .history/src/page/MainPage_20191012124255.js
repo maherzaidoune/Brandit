@@ -77,7 +77,9 @@ class MainPage extends Component {
       maxHeight: 1920,
       cameraType: 'back',
       mediaType: 'photo',
+      quality: 1,
       allowsEditing: false,
+      allowsEditing: true,
       storageOptions: {
         waitUntilSaved: true,
       },

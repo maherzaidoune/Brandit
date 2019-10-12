@@ -178,7 +178,6 @@ class LoginPage extends Component {
                     username: text,
                   })
                 }
-                autoCapitalize={false}
                 value={this.state.username}
                 placeholder={'username'}
                 keyboard={'default'}

@@ -34,12 +34,12 @@ class MainPage extends Component {
         skipBackup: true,
         path: 'images',
       },
-      maxWidth: 1080,
-      maxHeight: 1920,
+      maxWidth: ,
+      maxHeight: ,
       cameraType: 'back',
       mediaType: 'photo',
       quality: 1,
-      allowsEditing: false,
+      allowsEditing: true,
     };
     ImagePicker.launchCamera(options, response => {
       console.log(this.props.mask);
@@ -73,11 +73,7 @@ class MainPage extends Component {
       cameraType: 'back',
       mediaType: 'photo',
       quality: 1,
-      maxWidth: 1080,
-      maxHeight: 1920,
-      cameraType: 'back',
-      mediaType: 'photo',
-      allowsEditing: false,
+      allowsEditing: true,
       storageOptions: {
         waitUntilSaved: true,
       },
