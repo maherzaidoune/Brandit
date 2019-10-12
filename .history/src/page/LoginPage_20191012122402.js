@@ -24,7 +24,7 @@ class LoginPage extends Component {
     super(props);
     this.state = {
       username: 'coffee',
-      password: 'coffee',
+      password: '',
       rememberMe: false,
     };
   }

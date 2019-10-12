@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,7 +37,10 @@ import com.brandit.R;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 import ja.burhanrashid52.photoeditor.OnPhotoEditorListener;
@@ -84,15 +88,15 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
 
-        try{
-            if(getIntent().getExtras().getString("selectedImagePath") != null){
+        try {
+            if (getIntent().getExtras().getString("selectedImagePath") != null) {
                 // mPhotoEditorView.getSource().setimage(photo);
                 Glide.with(this).load(getIntent().getExtras().getString("selectedImagePath")).into(mPhotoEditorView.getSource());
             }
-            if(getIntent().getStringArrayListExtra("Stickers") != null){
+            if (getIntent().getStringArrayListExtra("Stickers") != null) {
                 Stickers = getIntent().getStringArrayListExtra("Stickers");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -237,19 +241,19 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private void saveImage() {
         if (requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             showLoading("Saving...");
-               File path = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Images");
+            File path = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Images");
 
-                File file = new File(path, System.currentTimeMillis() + ".png");
+            File file = new File(path, System.currentTimeMillis() + ".png");
 
             Log.i("file", file.getPath());
             try {
-                try{
+                try {
                     path.mkdirs();
                     file.createNewFile();
-                }catch (Exception e){
-                     file = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                             + File.separator
-                             + System.currentTimeMillis() + ".jpg");
+                } catch (Exception e) {
+                    file = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                            + File.separator
+                            + System.currentTimeMillis() + ".jpg");
                     file.createNewFile();
                 }
 
@@ -262,9 +266,75 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 mPhotoEditor.saveAsFile(file.getAbsolutePath(), saveSettings, new PhotoEditor.OnSaveListener() {
                     @Override
                     public void onSuccess(@NonNull String imagePath) {
-                        hideLoading();
-                        showSnackbar("Image Saved Successfully");
-                        mPhotoEditorView.getSource().setImageURI(Uri.fromFile(new File(imagePath)));
+                        File source = new File(imagePath);
+                        FileChannel input = null, output = null;
+                        try {
+                            File environment;
+                            environment = Environment.getExternalStoragePublicDirectory(
+                                    Environment.DIRECTORY_PICTURES);
+                            File exportDir;
+                            exportDir = environment;
+                            if (!exportDir.isDirectory()) {
+                                return;
+                            }
+
+                            File dest = new File(exportDir, source.getName());
+                            int n = 0;
+                            String fullSourceName = source.getName();
+                            String sourceName, sourceExt;
+                            if (fullSourceName.indexOf('.') >= 0) {
+                                sourceName = fullSourceName.substring(0, fullSourceName.lastIndexOf('.'));
+                                sourceExt = fullSourceName.substring(fullSourceName.lastIndexOf('.'));
+                            } else {
+                                sourceName = fullSourceName;
+                                sourceExt = "";
+                            }
+                            while (!dest.createNewFile()) {
+                                dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
+                            }
+                            input = new FileInputStream(source).getChannel();
+                            output = new FileOutputStream(dest).getChannel();
+                            output.transferFrom(input, 0, input.size());
+                            input.close();
+                            output.close();
+
+                            MediaScannerConnection.scanFile(
+                                    EditImageActivity.this,
+                                    new String[]{dest.getAbsolutePath()},
+                                    null,
+                                    new MediaScannerConnection.OnScanCompletedListener() {
+                                        @Override
+                                        public void onScanCompleted(String path, Uri uri) {
+                                            if (uri != null) {
+                                                hideLoading();
+                                                showSnackbar("Image Saved Successfully");
+                                                mPhotoEditorView.getSource().setImageURI(Uri.fromFile(new File(path)));
+                                            } else {
+                                                hideLoading();
+                                                showSnackbar("Failed to save Image");
+                                            }
+                                        }
+                                    });
+                        } catch (IOException e) {
+                            hideLoading();
+                            Log.i("Error", "Exception == ", e);
+                            showSnackbar("Failed to save Image");
+                        } finally {
+                            if (input != null && input.isOpen()) {
+                                try {
+                                    input.close();
+                                } catch (IOException e) {
+                                    Log.i("Error", "Could not close input channel", e);
+                                }
+                            }
+                            if (output != null && output.isOpen()) {
+                                try {
+                                    output.close();
+                                } catch (IOException e) {
+                                    Log.i("Error", "Could not close output channel", e);
+                                }
+                            }
+                        }
                     }
 
                     @Override
@@ -279,6 +349,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 showSnackbar(e.getMessage());
             }
         }
+
     }
 
     @Override
