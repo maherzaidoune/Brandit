@@ -22,15 +22,6 @@ import javax.microedition.khronos.opengles.GL10;
 import static android.media.effect.EffectFactory.*;
 import static ja.burhanrashid52.photoeditor.PhotoFilter.*;
 
-/**
- * <p>
- * Filter Images using ImageFilterView
- * </p>
- *
- * @author <a href="https://github.com/burhanrashid52">Burhanuddin Rashid</a>
- * @version 0.1.2
- * @since 2/14/2018
- */
 class ImageFilterView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     private static final String TAG = "ImageFilterView";

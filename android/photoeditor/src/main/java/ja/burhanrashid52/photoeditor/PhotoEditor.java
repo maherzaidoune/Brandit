@@ -71,13 +71,7 @@ public class PhotoEditor implements BrushViewChangeListener {
         redoViews = new ArrayList<>();
     }
 
-    /**
-     * This will add image on {@link PhotoEditorView} which you drag,rotate and scale using pinch
-     * if {@link PhotoEditor.Builder#setPinchTextScalable(boolean)} enabled
-     *
-     * @param desiredImage bitmap image you want to add
-     */
-    public void addImage(Bitmap desiredImage) {
+    public void addImage(Bitmap desiredImage, boolean isFrame) {
         final View imageRootView = getLayout(ViewType.IMAGE);
         final ImageView imageView = imageRootView.findViewById(R.id.imgPhotoEditorImage);
         final FrameLayout frmBorder = imageRootView.findViewById(R.id.frmBorder);
@@ -85,23 +79,24 @@ public class PhotoEditor implements BrushViewChangeListener {
 
         imageView.setImageBitmap(desiredImage);
 
-        MultiTouchListener multiTouchListener = getMultiTouchListener();
-        multiTouchListener.setOnGestureControl(new MultiTouchListener.OnGestureControl() {
-            @Override
-            public void onClick() {
-                boolean isBackgroundVisible = frmBorder.getTag() != null && (boolean) frmBorder.getTag();
-                frmBorder.setBackgroundResource(isBackgroundVisible ? 0 : R.drawable.rounded_border_tv);
-                imgClose.setVisibility(isBackgroundVisible ? View.GONE : View.VISIBLE);
-                frmBorder.setTag(!isBackgroundVisible);
-            }
+        if(!isFrame){
+            MultiTouchListener multiTouchListener = getMultiTouchListener();
+            multiTouchListener.setOnGestureControl(new MultiTouchListener.OnGestureControl() {
+                @Override
+                public void onClick() {
+                    boolean isBackgroundVisible = frmBorder.getTag() != null && (boolean) frmBorder.getTag();
+                    frmBorder.setBackgroundResource(isBackgroundVisible ? 0 : R.drawable.rounded_border_tv);
+                    imgClose.setVisibility(isBackgroundVisible ? View.GONE : View.VISIBLE);
+                    frmBorder.setTag(!isBackgroundVisible);
+                }
 
-            @Override
-            public void onLongClick() {
+                @Override
+                public void onLongClick() {
 
-            }
-        });
-
-        imageRootView.setOnTouchListener(multiTouchListener);
+                }
+            });
+            imageRootView.setOnTouchListener(multiTouchListener);
+        }
 
         addViewToParent(imageRootView, ViewType.IMAGE);
 
@@ -663,6 +658,7 @@ public class PhotoEditor implements BrushViewChangeListener {
                         // Create a media file name
                         File file = new File(imagePath);
                         try {
+                            Log.i("settings : ", "saveFilter saveSettings : " + saveSettings);
                             FileOutputStream out = new FileOutputStream(file, false);
                             if (parentView != null) {
                                 parentView.setDrawingCacheEnabled(true);
@@ -740,6 +736,7 @@ public class PhotoEditor implements BrushViewChangeListener {
                     @Override
                     protected Bitmap doInBackground(String... strings) {
                         if (parentView != null) {
+                            Log.i("settings : ", "saveAsBitmap saveSettings : " + saveSettings);
                             parentView.setDrawingCacheEnabled(true);
                             return saveSettings.isTransparencyEnabled() ?
                                     BitmapUtil.removeTransparency(parentView.getDrawingCache())

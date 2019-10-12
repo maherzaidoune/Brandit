@@ -4,22 +4,22 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.brandit.R;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.FutureTarget;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -29,12 +29,11 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
 
-public class StickerBSFragment extends BottomSheetDialogFragment {
-
+public class FrameBSFragment extends BottomSheetDialogFragment {
     ArrayList<String> Stickers;
     ArrayList<Bitmap> bitmaps;
 
-    public StickerBSFragment(ArrayList<String> Stickers) {
+    public FrameBSFragment(ArrayList<String> Stickers) {
         // Required empty public constructor
         this.Stickers = Stickers;
         this.bitmaps = new ArrayList<>();
@@ -46,7 +45,7 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                for (String s: Stickers) {
+                for (String s : Stickers) {
                     try {
                         Bitmap bitmap = Glide.with(context).asBitmap().load(s).submit().get();
                         bitmaps.add(bitmap);
@@ -61,9 +60,9 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
         thread.start();
     }
 
-    private StickerListener mStickerListener;
+    private StickerBSFragment.StickerListener mStickerListener;
 
-    public void setStickerListener(StickerListener stickerListener) {
+    public void setStickerListener(StickerBSFragment.StickerListener stickerListener) {
         mStickerListener = stickerListener;
     }
 
@@ -104,7 +103,7 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
         rvEmoji.setLayoutManager(gridLayoutManager);
-        StickerAdapter stickerAdapter = new StickerAdapter(Stickers);
+        FrameBSFragment.StickerAdapter stickerAdapter = new FrameBSFragment.StickerAdapter(Stickers);
         rvEmoji.setAdapter(stickerAdapter);
     }
 
@@ -114,7 +113,7 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
 
     }
 
-    public class StickerAdapter extends RecyclerView.Adapter<StickerAdapter.ViewHolder> {
+    public class StickerAdapter extends RecyclerView.Adapter<FrameBSFragment.StickerAdapter.ViewHolder> {
 
         public StickerAdapter(ArrayList<String> stickerList) {
             this.stickerList = stickerList;
@@ -124,13 +123,13 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
         ArrayList<File> files;
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public FrameBSFragment.StickerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_sticker, parent, false);
-            return new ViewHolder(view);
+            return new FrameBSFragment.StickerAdapter.ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(FrameBSFragment.StickerAdapter.ViewHolder holder, int position) {
             Glide.with(getContext()).load(stickerList.get(position)).into(holder.imgSticker);
 //            holder.imgSticker.setImageResource(stickerList.get(position));
         }
@@ -153,7 +152,7 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
                         if (mStickerListener != null) {
 //                            mStickerListener.onStickerClick(
 //                                    BitmapFactory.decodeFile(files.get(getLayoutPosition()).getPath()));
-                             mStickerListener.onStickerClick(bitmaps.get(getLayoutPosition()), false);
+                            mStickerListener.onStickerClick(bitmaps.get(getLayoutPosition()), true);
                         }
                         dismiss();
                     }

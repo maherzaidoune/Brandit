@@ -68,6 +68,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private PropertiesBSFragment mPropertiesBSFragment;
     private EmojiBSFragment mEmojiBSFragment;
     private StickerBSFragment mStickerBSFragment;
+    private FrameBSFragment mFrameBSFragment;
     private TextView mTxtCurrentTool;
     private Typeface mWonderFont;
     private RecyclerView mRvTools, mRvFilters;
@@ -105,6 +106,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         mEmojiBSFragment = new EmojiBSFragment();
         mStickerBSFragment = new StickerBSFragment(Stickers);
         mStickerBSFragment.setStickerListener(this);
+        mFrameBSFragment = new FrameBSFragment(Stickers);
+        mFrameBSFragment.setStickerListener(this);
         mEmojiBSFragment.setEmojiListener(this);
         mPropertiesBSFragment.setPropertiesChangeListener(this);
 
@@ -402,8 +405,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     }
 
     @Override
-    public void onStickerClick(Bitmap bitmap) {
-        mPhotoEditor.addImage(bitmap);
+    public void onStickerClick(Bitmap bitmap, boolean isFrame) {
+        mPhotoEditor.addImage(bitmap, isFrame);
         mTxtCurrentTool.setText(R.string.label_sticker);
     }
 
@@ -481,7 +484,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
                 break;
             case FRAME:
-                mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
+                mFrameBSFragment.show(getSupportFragmentManager(), mFrameBSFragment.getTag());
                 break;
         }
     }
