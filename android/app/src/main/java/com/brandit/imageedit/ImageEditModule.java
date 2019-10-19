@@ -70,14 +70,17 @@ public class ImageEditModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void Edit(final ReadableMap props, final Callback onDone, final Callback onCancel) {
         String path = props.getString("path");
-
-
-
         Intent intent = new Intent(getCurrentActivity(), EditImageActivity.class);
         intent.putExtra("selectedImagePath", path);
         try{
             ArrayList<String> Stickers = toArray(props.getArray("Stickers"));
             intent.putStringArrayListExtra("Stickers", Stickers);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+            ArrayList<String> mask = toArray(props.getArray("mask"));
+            intent.putStringArrayListExtra("mask", mask);
         }catch (Exception e){
             e.printStackTrace();
         }

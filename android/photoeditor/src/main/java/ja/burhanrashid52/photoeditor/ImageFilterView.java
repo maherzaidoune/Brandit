@@ -77,7 +77,6 @@ class ImageFilterView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-
         if (!mInitialized) {
             //Only need to do this once
             mEffectContext = EffectContext.createWithCurrentGlContext();

@@ -97,6 +97,8 @@ public class PhotoEditor implements BrushViewChangeListener {
             });
             imageRootView.setOnTouchListener(multiTouchListener);
         }
+        else{
+        }
 
         addViewToParent(imageRootView, ViewType.IMAGE);
 

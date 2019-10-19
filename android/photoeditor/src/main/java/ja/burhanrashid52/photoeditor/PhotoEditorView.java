@@ -95,7 +95,7 @@ public class PhotoEditorView extends RelativeLayout {
 
         //Align brush to the size of image view
         RelativeLayout.LayoutParams imgFilterParam = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         imgFilterParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         imgFilterParam.addRule(RelativeLayout.ALIGN_TOP, imgSrcId);
         imgFilterParam.addRule(RelativeLayout.ALIGN_BOTTOM, imgSrcId);

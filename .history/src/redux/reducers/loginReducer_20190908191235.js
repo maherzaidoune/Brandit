@@ -1,3 +1,0 @@
-cont INITIAL_STATE = {
-
-}

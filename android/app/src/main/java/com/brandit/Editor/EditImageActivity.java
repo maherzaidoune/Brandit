@@ -78,6 +78,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private ConstraintSet mConstraintSet = new ConstraintSet();
     private boolean mIsFilterVisible;
     ArrayList<String> Stickers;
+    ArrayList<String> masks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +92,15 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         try {
             if (getIntent().getExtras().getString("selectedImagePath") != null) {
-                // mPhotoEditorView.getSource().setimage(photo);
+                 mPhotoEditorView.getSource().setScaleType(ImageView.ScaleType.CENTER_CROP);
                 Glide.with(this).load(getIntent().getExtras().getString("selectedImagePath")).into(mPhotoEditorView.getSource());
             }
             if (getIntent().getStringArrayListExtra("Stickers") != null) {
                 Stickers = getIntent().getStringArrayListExtra("Stickers");
+            }
+            if (getIntent().getStringArrayListExtra("mask") != null) {
+                masks = getIntent().getStringArrayListExtra("mask");
+                Log.i("mask == ", masks.size() + "");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,7 +111,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         mEmojiBSFragment = new EmojiBSFragment();
         mStickerBSFragment = new StickerBSFragment(Stickers);
         mStickerBSFragment.setStickerListener(this);
-        mFrameBSFragment = new FrameBSFragment(Stickers);
+        mFrameBSFragment = new FrameBSFragment(masks);
         mFrameBSFragment.setStickerListener(this);
         mEmojiBSFragment.setEmojiListener(this);
         mPropertiesBSFragment.setPropertiesChangeListener(this);
@@ -312,7 +317,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                                             if (uri != null) {
                                                 hideLoading();
                                                 showSnackbar("Image Saved Successfully");
-                                                mPhotoEditorView.getSource().setImageURI(Uri.fromFile(new File(path)));
+                                                Glide.with(EditImageActivity.this).load(Uri.fromFile(new File(path))).into(mPhotoEditorView.getSource());
                                             } else {
                                                 hideLoading();
                                                 showSnackbar("Failed to save Image");
@@ -407,7 +412,11 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     @Override
     public void onStickerClick(Bitmap bitmap, boolean isFrame) {
         mPhotoEditor.addImage(bitmap, isFrame);
-        mTxtCurrentTool.setText(R.string.label_sticker);
+        if(isFrame){
+            mTxtCurrentTool.setText("Template");
+        }else{
+            mTxtCurrentTool.setText(R.string.label_sticker);
+        }
     }
 
     @Override

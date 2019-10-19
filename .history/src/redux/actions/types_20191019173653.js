@@ -1,0 +1,12 @@
+export const LOGIN_USER = 'LOGIN_USER';
+export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
+export const LOGIN_USER_FAILED = 'LOGIN_USER_FAILED';
+export const GET_MASK = 'GET_MASK';
+export const GET_MASK_SUCCESS = 'GET_MASK_SUCCESS';
+export const GET_MASK_FAILED = 'GET_MASK_FAILED';
+export const GET_LOGO = 'GET_LOGO';
+export const GET_LOGO_SUCCESS = 'GET_LOGO_SUCCESS';
+export const GET_LOGO_FAILED = 'GET_LOGO_FAILED';
+export const GET_ICONS = 'GET_ICONS';
+export const GET_ICONS_SUCCESS = 'GET_ICONS_SUCCESS';
+export const GET_LOGO_FAILED = 'GET_ICONS_FAILED';
