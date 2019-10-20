@@ -9,10 +9,15 @@ export default class AppLoadingPage extends Component {
         StatusBar.setTranslucent(true);
     }
 
+    componentWillMount(){
+      StatusBar.setBarStyle("light-content");
+        StatusBar.setTranslucent(true);
+    }
+
     componentDidMount(){
         setTimeout(() => {
             this.props.navigation.navigate('Login');
-        }, 3000);
+        }, 2000);
     }
   render() {
     return (

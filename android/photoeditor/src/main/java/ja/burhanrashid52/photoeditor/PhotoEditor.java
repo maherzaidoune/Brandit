@@ -54,6 +54,8 @@ public class PhotoEditor implements BrushViewChangeListener {
     private boolean isTextPinchZoomable;
     private Typeface mDefaultTextTypeface;
     private Typeface mDefaultEmojiTypeface;
+    private View template;
+
 
 
     private PhotoEditor(Builder builder) {
@@ -78,7 +80,6 @@ public class PhotoEditor implements BrushViewChangeListener {
         final ImageView imgClose = imageRootView.findViewById(R.id.imgPhotoEditorClose);
 
         imageView.setImageBitmap(desiredImage);
-
         if(!isFrame){
             MultiTouchListener multiTouchListener = getMultiTouchListener();
             multiTouchListener.setOnGestureControl(new MultiTouchListener.OnGestureControl() {
@@ -98,6 +99,11 @@ public class PhotoEditor implements BrushViewChangeListener {
             imageRootView.setOnTouchListener(multiTouchListener);
         }
         else{
+            if(template != null)
+                viewUndo(template, ViewType.IMAGE);
+            frmBorder.setBackgroundResource(0);
+            imgClose.setVisibility(View.GONE);
+            template = imageRootView;
         }
 
         addViewToParent(imageRootView, ViewType.IMAGE);

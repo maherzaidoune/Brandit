@@ -12,12 +12,14 @@ export default class AppLoadingPage extends Component {
     componentDidMount(){
         setTimeout(() => {
             this.props.navigation.navigate('Login');
-        }, 3000);
+        }, 2000);
+        StatusBar.setBarStyle("light-content");
+        StatusBar.setTranslucent(true);
     }
   render() {
     return (
       <View>
-        <StatusBar backgroundColor="transparent" barStyle="light-content" />   
+        <StatusBar backgroundColor="transparent" barStyle="light-content" translucent />   
         <ImageBackground
           source={background}
           style={{width: '100%', height: '100%'}}>
