@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.brandit">
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:name=".MainApplication"
@@ -26,6 +27,16 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".Watermark.CameraActivity"
+            android:theme="@style/Theme.MainActivity"
+            android:configChanges="screenLayout|keyboardHidden"
+            android:hardwareAccelerated="true">
+        </activity>
+
+        <activity android:name=".Watermark.PicturePreviewActivity" />
+
+        <activity android:name=".Watermark.VideoPreviewActivity"/>
     </application>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
