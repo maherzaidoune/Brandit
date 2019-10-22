@@ -647,11 +647,15 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
             case EXPOSURE_CORRECTION:
                 oldValue = mCameraEngine.getExposureCorrectionValue();
-//                float minValue = options.getExposureCorrectionMinValue();
-//                float maxValue = options.getExposureCorrectionMaxValue();
-//                newValue = source.computeValue(oldValue, minValue, maxValue);
+                float minValue = options.getExposureCorrectionMinValue();
+                float maxValue = options.getExposureCorrectionMaxValue();
+                newValue = source.computeValue(oldValue, -1, 1);
+                LOG.i("newValue", "newValue : " + newValue);
 //                if (newValue != oldValue) {
 //                    float[] bounds = new float[]{minValue, maxValue};
+                float bounce = points[points.length - 1].x - points[0].x ;
+                LOG.i("newValue", "bounce : " + bounce);
+                if(Math.abs(newValue) > 0.1 &&  Math.abs(bounce) > 220)
                     mCameraEngine.setExposureCorrection(oldValue, null, points, true);
                 //}
                 break;

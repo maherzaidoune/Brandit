@@ -1,23 +1,36 @@
 package com.brandit.Watermark;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -27,6 +40,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
@@ -72,12 +91,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private final Filters[] mAllFilters = Filters.values();
 
     ArrayList<String> masks;
-    private int mCurrentMask = 0;
 
     ArrayList<String> landscapemasks;
-    private int mCurrentLandscapeMask = 0;
 
+    static ArrayList<String> Frames;
+    private static int mCurrentMask = 0;
+    int  ORIENTATION = -1;
     ImageView watermark;
+    LinearLayout recording;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,44 +107,76 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
         masks = new ArrayList<>();
         landscapemasks = new ArrayList<>();
+        Frames = new ArrayList<>();
         camera = findViewById(R.id.camera);
         camera.setLifecycleOwner(this);
         camera.addCameraListener(new Listener());
         watermark = findViewById(R.id.watermark);
-
+        recording = findViewById(R.id.recording);
+        recording.setVisibility(View.GONE);
         try {
             if (getIntent().getStringArrayListExtra("mask") != null) {
-                ArrayList<String> data = getIntent().getStringArrayListExtra("mask");
-                if(data == null || data.size() == 0){
-                    masks = null;
-                    landscapemasks= null;
-                    return;
+                masks = getIntent().getStringArrayListExtra("mask");
+                if (masks != null && masks.size() > 0) {
+                    for (String s : masks) {
+                        Glide.with(this.getApplicationContext())
+                                .asBitmap()
+                                .load(s)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .submit();
+                    }
                 }
-                for (String s : data){
-                    Glide.with(this.getApplicationContext())
-                            .asBitmap()
-                            .load(s)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                    int w = resource.getWidth();
-                                    int h = resource.getHeight();
-                                    if(h > w){
-                                        masks.add(s);
-                                    }else
-                                        landscapemasks.add(s);
-                                }
-                            });
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (getIntent().getStringArrayListExtra("landmasq") != null) {
+                landscapemasks = getIntent().getStringArrayListExtra("landmasq");
+                if (landscapemasks != null && landscapemasks.size() > 0) {
+                    for (String s : landscapemasks) {
+                        Glide.with(this.getApplicationContext())
+                                .asBitmap()
+                                .load(s)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .submit();
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if(masks != null && masks.size() > 0)
-                Glide.with(this).load(masks.get(0)).into(watermark);
         }
 
+
+        OrientationEventListener mOrientationListener = new OrientationEventListener(
+                getApplicationContext()) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if (orientation == ORIENTATION)
+                    return;
+                ORIENTATION = orientation;
+                mCurrentMask = 0;
+                if (orientation == 0 || orientation == 180) {
+                    Frames = masks;
+                } else if (orientation == 90 || orientation == 270) {
+                    Frames = landscapemasks;
+                }
+            }
+        };
+
+        if (mOrientationListener.canDetectOrientation()) {
+            mOrientationListener.enable();
+        }
+
+        if(Frames != null && Frames.size() > 0)
+            Glide.with(CameraActivity.this).load(Frames.get(0)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
+        else
+            Glide.with(CameraActivity.this).load(masks.get(0)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
+
+
+
+        //Glide.with(this).load(masks.get(0)).into(watermark);
         if (USE_FRAME_PROCESSOR) {
             camera.addFrameProcessor(new FrameProcessor() {
                 @Override
@@ -150,9 +203,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.captureVideoSnapshot).setOnClickListener(this);
         findViewById(R.id.toggleCamera).setOnClickListener(this);
 //        findViewById(R.id.changeFilter).setOnClickListener(this);
-
-
-
 
         List<Option<?>> options = Arrays.asList(
                 // Layout
@@ -193,6 +243,22 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 //                    ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(camera.isTakingVideo())
+            return;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (Frames == null || Frames.size() == 0)
+                    return;
+                Glide.with(CameraActivity.this).load(Frames.get(mCurrentMask)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
+            }
+        });
     }
 
     private void message(@NonNull String content, boolean important) {
@@ -233,72 +299,89 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         public void onVideoTaken(@NonNull VideoResult result) {
-            super.onVideoTaken(result);
-            message("onVideoTaken " + result.toString(), true);
-            File source = result.getFile();
-            FileChannel input = null, output = null;
-            try {
-                File environment;
-                environment = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_MOVIES);
-                File exportDir;
-                exportDir = environment;
-                if (!exportDir.isDirectory()) {
-                    return;
-                }
-
-                File dest = new File(exportDir, source.getName());
-                int n = 0;
-                String fullSourceName = source.getName();
-                String sourceName, sourceExt;
-                if (fullSourceName.indexOf('.') >= 0) {
-                    sourceName = fullSourceName.substring(0, fullSourceName.lastIndexOf('.'));
-                    sourceExt = fullSourceName.substring(fullSourceName.lastIndexOf('.'));
-                } else {
-                    sourceName = fullSourceName;
-                    sourceExt = "";
-                }
-                while (!dest.createNewFile()) {
-                    dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
-                }
-                input = new FileInputStream(source).getChannel();
-                output = new FileOutputStream(dest).getChannel();
-                output.transferFrom(input, 0, input.size());
-                input.close();
-                output.close();
-
-                MediaScannerConnection.scanFile(
-                        CameraActivity.this,
-                        new String[]{dest.getAbsolutePath()},
-                        null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            @Override
-                            public void onScanCompleted(String path, Uri uri) {
-                                if (uri != null) {
-                                    message("success "+ uri, true);
-                                } else {
-                                    message("fail ", true);
-                                }
-                            }
-                        });
-            } catch (IOException e) {
-                message("IOException " + e.getMessage(), true);
-            } finally {
-                if (input != null && input.isOpen()) {
+            //super.onVideoTaken(result);
+            String[] permissions = new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+            Permissions.check(CameraActivity.this, permissions, null, null, new PermissionHandler() {
+                @Override
+                public void onGranted() {
+                    File source = result.getFile();
+                    FileChannel input = null, output = null;
                     try {
+                        File environment;
+                        environment = Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_MOVIES);
+                        File exportDir;
+                        exportDir = environment;
+                        if (!exportDir.isDirectory()) {
+                            return;
+                        }
+                        File dest = new File(exportDir, source.getName());
+                        int n = 0;
+                        String fullSourceName = source.getName();
+                        String sourceName, sourceExt;
+                        if (fullSourceName.indexOf('.') >= 0) {
+                            sourceName = fullSourceName.substring(0, fullSourceName.lastIndexOf('.'));
+                            sourceExt = fullSourceName.substring(fullSourceName.lastIndexOf('.'));
+                        } else {
+                            sourceName = fullSourceName;
+                            sourceExt = "";
+                        }
+                        while (!dest.createNewFile()) {
+                            dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
+                        }
+                        input = new FileInputStream(source).getChannel();
+                        output = new FileOutputStream(dest).getChannel();
+                        output.transferFrom(input, 0, input.size());
                         input.close();
-                    } catch (IOException e) {
-                        Log.i("Error", "Could not close input channel", e);
-                    }
-                }
-                if (output != null && output.isOpen()) {
-                    try {
                         output.close();
+                        MediaScannerConnection.scanFile(
+                                CameraActivity.this,
+                                new String[]{dest.getAbsolutePath()},
+                                null,
+                                new MediaScannerConnection.OnScanCompletedListener() {
+                                    @Override
+                                    public void onScanCompleted(String path, Uri uri) {
+                                        if (uri != null) {
+                                            message("success " + uri, true);
+                                        } else {
+                                            message("fail ", true);
+                                        }
+                                    }
+                                });
                     } catch (IOException e) {
-                        Log.i("Error", "Could not close output channel", e);
+                        message("IOException " + e.getMessage(), true);
+                    } finally {
+                        if (input != null && input.isOpen()) {
+                            try {
+                                input.close();
+                            } catch (IOException e) {
+                                Log.i("Error", "Could not close input channel", e);
+                            }
+                        }
+                        if (output != null && output.isOpen()) {
+                            try {
+                                output.close();
+                            } catch (IOException e) {
+                                Log.i("Error", "Could not close output channel", e);
+                            }
+                        }
                     }
                 }
-            }
+
+                @Override
+                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                    super.onDenied(context, deniedPermissions);
+
+                }
+
+                @Override
+                public boolean onBlocked(Context context, ArrayList<String> blockedList) {
+                    return super.onBlocked(context, blockedList);
+                }
+            });
             //VideoPreviewActivity.setVideoResult(result);
 //            Intent intent = new Intent(CameraActivity.this, VideoPreviewActivity.class);
 //            startActivity(intent);
@@ -308,12 +391,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void onVideoRecordingStart() {
             super.onVideoRecordingStart();
-            //LOG.w("onVideoRecordingStart!");
+            recording.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onVideoRecordingEnd() {
             super.onVideoRecordingEnd();
+            recording.setVisibility(View.GONE);
             message("Video taken. Processing...", false);
             //LOG.w("onVideoRecordingEnd!");
         }
@@ -321,14 +405,18 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         public void onExposureCorrectionChanged(float newValue, @NonNull float[] bounds, @Nullable PointF[] fingers) {
-            if(masks == null || masks.size() == 0)
-                return;
-            if(!camera.isTakingVideo()){
-                if(mCurrentMask != masks.size()){
-                    if(watermark.getVisibility() == View.GONE)
+            if (Frames == null || Frames.size() == 0) {
+                if ((masks == null || masks.size() == 0))
+                    return;
+                Frames = masks;
+            }
+
+            if (!camera.isTakingVideo()) {
+                if (mCurrentMask != Frames.size()) {
+                    if (watermark.getVisibility() == View.GONE)
                         watermark.setVisibility(View.VISIBLE);
-                    Glide.with(CameraActivity.this).load(masks.get(mCurrentMask)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
-                }else{
+                    Glide.with(CameraActivity.this).load(Frames.get(mCurrentMask)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
+                } else {
                     mCurrentMask = -1;
                     watermark.setVisibility(View.GONE);
                     //Glide.with(CameraActivity.this).load(masks.get(mCurrentMask)).into(watermark);
@@ -352,8 +440,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 //            case R.id.capturePicture: capturePicture(); break;
 //            case R.id.capturePictureSnapshot: capturePictureSnapshot(); break;
 //            case R.id.captureVideo: captureVideo(); break;
-            case R.id.captureVideoSnapshot: captureVideoSnapshot(); break;
-            case R.id.toggleCamera: toggleCamera(); break;
+            case R.id.captureVideoSnapshot:
+                captureVideoSnapshot();
+                break;
+            case R.id.toggleCamera:
+                toggleCamera();
+                break;
 //            case R.id.changeFilter: changeCurrentFilter(); break;
         }
     }
@@ -382,7 +474,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             message("Video snapshots are only allowed with the GL_SURFACE preview.", true);
             return;
         }
-        camera.takeVideoSnapshot(new File(getFilesDir(), "video.mp4"));
+        camera.takeVideoSnapshot(new File(getFilesDir(), System.currentTimeMillis() +"video.mp4"));
     }
 
     private void toggleCamera() {
@@ -446,6 +538,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             camera.open();
         }
     }
+
 
     //endregion
 }

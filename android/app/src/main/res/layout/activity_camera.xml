@@ -45,6 +45,8 @@
 
     </com.otaliastudios.cameraview.CameraView>
 
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,6 +62,18 @@
 <!--            android:background="@drawable/background"-->
 <!--            android:elevation="3dp"-->
 <!--            app:srcCompat="@drawable/ic_filters" />-->
+
+        <LinearLayout
+            android:id="@+id/recording"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_record"/>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/toggleCamera"

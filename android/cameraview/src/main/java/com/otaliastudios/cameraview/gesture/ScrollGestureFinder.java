@@ -20,7 +20,7 @@ public class ScrollGestureFinder extends GestureFinder {
     private float mFactor;
 
     public ScrollGestureFinder(final @NonNull Controller controller) {
-        super(controller, 10);
+        super(controller, 2);
         mDetector = new GestureDetector(controller.getContext(),
                 new GestureDetector.SimpleOnGestureListener() {
 

@@ -18,7 +18,6 @@ export default function VideoEditor(props: Props) {
       onCancel,
       onDone,
       mask,
-      landmasq
     },
     onDone,
     onCancel,

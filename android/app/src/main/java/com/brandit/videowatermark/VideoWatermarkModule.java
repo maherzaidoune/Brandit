@@ -73,6 +73,12 @@ public class VideoWatermarkModule extends ReactContextBaseJavaModule {
         }catch (Exception e){
             e.printStackTrace();
         }
+        try{
+            ArrayList<String> landmasq = toArray(props.getArray("landmasq"));
+            intent.putStringArrayListExtra("landmasq", landmasq);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         mCancelCallback = onCancel;
         mDoneCallback = onDone;

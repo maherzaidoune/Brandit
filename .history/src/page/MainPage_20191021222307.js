@@ -203,8 +203,7 @@ const mapStateToProps = state => {
   return {
     isRequesting: state.Data.isRequesting,
     mask: state.Data.masq,
-    logo: state.Data.logo,
-    landmasq: state.Data.landmasq
+    logo: state.Data.logo
   };
 };
 export default connect(

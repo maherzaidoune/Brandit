@@ -22,7 +22,6 @@ export default function PhotoEditor(props: Props) {
       path,
       Stickers,
       mask,
-      landmasq
     },
     onDone,
     onCancel,

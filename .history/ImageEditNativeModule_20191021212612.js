@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function PhotoEditor(props: Props) {
-  const {onCancel = () => {}, onDone = () => {}, path, Stickers, mask, landmasq} = props;
+  const {onCancel = () => {}, onDone = () => {}, path, Stickers, mask} = props;
   ImageEdit.Edit(
     {
       onCancel,
@@ -22,7 +22,6 @@ export default function PhotoEditor(props: Props) {
       path,
       Stickers,
       mask,
-      landmasq
     },
     onDone,
     onCancel,

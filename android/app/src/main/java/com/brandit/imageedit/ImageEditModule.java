@@ -79,6 +79,12 @@ public class ImageEditModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
         }
         try{
+            ArrayList<String> landmasq = toArray(props.getArray("landmasq"));
+            intent.putStringArrayListExtra("landmasq", landmasq);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
             ArrayList<String> mask = toArray(props.getArray("mask"));
             intent.putStringArrayListExtra("mask", mask);
         }catch (Exception e){

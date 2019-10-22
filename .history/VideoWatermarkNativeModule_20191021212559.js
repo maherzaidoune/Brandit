@@ -12,13 +12,12 @@ type Props = {
 };
 
 export default function VideoEditor(props: Props) {
-  const {onCancel = () => {}, onDone = () => {}, mask, landmasq} = props;
+  const {onCancel = () => {}, onDone = () => {}, mask} = props;
   VideoWatermark.Edit(
     {
       onCancel,
       onDone,
       mask,
-      landmasq
     },
     onDone,
     onCancel,
