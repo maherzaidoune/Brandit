@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -80,6 +81,7 @@ public class PhotoEditor implements BrushViewChangeListener {
         final ImageView imgClose = imageRootView.findViewById(R.id.imgPhotoEditorClose);
 
         imageView.setImageBitmap(desiredImage);
+        //imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         if(!isFrame){
             MultiTouchListener multiTouchListener = getMultiTouchListener();
             multiTouchListener.setOnGestureControl(new MultiTouchListener.OnGestureControl() {
@@ -101,6 +103,7 @@ public class PhotoEditor implements BrushViewChangeListener {
         else{
             if(template != null)
                 viewUndo(template, ViewType.IMAGE);
+            //frmBorder.setBackgroundResource(R.drawable.rounded_border_tv);
             frmBorder.setBackgroundResource(0);
             imgClose.setVisibility(View.GONE);
             template = imageRootView;

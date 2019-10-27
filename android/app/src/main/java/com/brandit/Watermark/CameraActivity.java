@@ -172,33 +172,34 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         if(Frames != null && Frames.size() > 0)
             Glide.with(CameraActivity.this).load(Frames.get(0)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
         else
-            Glide.with(CameraActivity.this).load(masks.get(0)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
+            if(ORIENTATION == -1 || ORIENTATION == 0 || ORIENTATION == 180 )
+                Glide.with(CameraActivity.this).load(masks.get(0)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
+            else
+                Glide.with(CameraActivity.this).load(landscapemasks.get(0)).diskCacheStrategy(DiskCacheStrategy.ALL).into(watermark);
 
 
-
-        //Glide.with(this).load(masks.get(0)).into(watermark);
-        if (USE_FRAME_PROCESSOR) {
-            camera.addFrameProcessor(new FrameProcessor() {
-                @Override
-                public void process(@NonNull Frame frame) {
-
-                    if (DECODE_BITMAP) {
-                        YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
-                                frame.getSize().getWidth(),
-                                frame.getSize().getHeight(),
-                                null);
-                        ByteArrayOutputStream jpegStream = new ByteArrayOutputStream();
-                        yuvImage.compressToJpeg(new Rect(0, 0,
-                                frame.getSize().getWidth(),
-                                frame.getSize().getHeight()), 100, jpegStream);
-                        byte[] jpegByteArray = jpegStream.toByteArray();
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
-                        //noinspection ResultOfMethodCallIgnored
-                        bitmap.toString();
-                    }
-                }
-            });
-        }
+//        if (USE_FRAME_PROCESSOR) {
+//            camera.addFrameProcessor(new FrameProcessor() {
+//                @Override
+//                public void process(@NonNull Frame frame) {
+//
+//                    if (DECODE_BITMAP) {
+//                        YuvImage yuvImage = new YuvImage(frame.getData(), ImageFormat.NV21,
+//                                frame.getSize().getWidth(),
+//                                frame.getSize().getHeight(),
+//                                null);
+//                        ByteArrayOutputStream jpegStream = new ByteArrayOutputStream();
+//                        yuvImage.compressToJpeg(new Rect(0, 0,
+//                                frame.getSize().getWidth(),
+//                                frame.getSize().getHeight()), 100, jpegStream);
+//                        byte[] jpegByteArray = jpegStream.toByteArray();
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(jpegByteArray, 0, jpegByteArray.length);
+//                        //noinspection ResultOfMethodCallIgnored
+//                        bitmap.toString();
+//                    }
+//                }
+//            });
+//        }
 
         findViewById(R.id.captureVideoSnapshot).setOnClickListener(this);
         findViewById(R.id.toggleCamera).setOnClickListener(this);
@@ -382,10 +383,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     return super.onBlocked(context, blockedList);
                 }
             });
-            //VideoPreviewActivity.setVideoResult(result);
-//            Intent intent = new Intent(CameraActivity.this, VideoPreviewActivity.class);
-//            startActivity(intent);
-            LOG.w("onVideoTaken called! Launched activity.");
         }
 
         @Override
@@ -399,9 +396,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             super.onVideoRecordingEnd();
             recording.setVisibility(View.GONE);
             message("Video taken. Processing...", false);
-            //LOG.w("onVideoRecordingEnd!");
         }
-
 
         @Override
         public void onExposureCorrectionChanged(float newValue, @NonNull float[] bounds, @Nullable PointF[] fingers) {

@@ -37,14 +37,14 @@ public class SnapshotVideoRecorder extends VideoRecorder implements RendererFram
     private static final String TAG = SnapshotVideoRecorder.class.getSimpleName();
     private static final CameraLogger LOG = CameraLogger.create(TAG);
 
-    private static final int DEFAULT_VIDEO_FRAMERATE = 30;
+    private static final int DEFAULT_VIDEO_FRAMERATE = 50;
     private static final int DEFAULT_AUDIO_BITRATE = 64000;
 
     // https://stackoverflow.com/a/5220554/4288782
     // Assuming low motion, we don't want to put this too high for default usage,
     // advanced users are still free to change this for each video.
     private static int estimateVideoBitRate(@NonNull Size size, int frameRate) {
-        return (int) (0.07F * 1F * size.getWidth() * size.getHeight() * frameRate);
+        return (int) (0.95F * 1F * size.getWidth() * size.getHeight() * frameRate);
     }
 
     private static final int STATE_RECORDING = 0;
@@ -173,9 +173,9 @@ public class SnapshotVideoRecorder extends VideoRecorder implements RendererFram
                 }
             }
             mResult.size = newVideoSize;
-            mResult.videoBitRate = newVideoBitRate;
-            mResult.audioBitRate = newAudioBitRate;
-            mResult.videoFrameRate = newVideoFrameRate;
+            mResult.videoBitRate = newVideoBitRate * 2;
+            mResult.audioBitRate = newAudioBitRate * 2;
+            mResult.videoFrameRate = newVideoFrameRate * 2;
 
             // Video
             TextureConfig videoConfig = new TextureConfig();

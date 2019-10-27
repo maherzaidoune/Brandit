@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
 import {getSize} from '../utils/UiUtils';
-// import AuthInput from '../component/AuthInput';
+import AuthInput from '../component/AuthInput';
 import CheckBox from '../utils/react-native-check-box/index.js';
 import {connect} from 'react-redux';
-import {Login} from '../redux/actions';
+import {Login, GetMasq, GetLogo} from '../redux/actions';
 const background = require('../images/background_screen.png');
 const line = require('../images/line.png');
 const logo = require('../images/logo.png');
@@ -29,8 +29,19 @@ class LoginPage extends Component {
     };
   }
 
-  login = () => {
+  componentDidMount(){
+    //dev
+    if (__DEV__) {
+      console.log('I am in debug');
+      this.setState({
+        username: 'coffee',
+        password: 'coffee'
+      }, () => this.login())
+  }
+    
+  }
 
+  login = () => {
     if(this.state.username.length < 1){
       Snackbar.show({
         title: 'INVALID USERNAME',
@@ -63,10 +74,26 @@ class LoginPage extends Component {
       this.state.username,
       this.state.password,
       Response => {
-        if (Response.data == 'ok') {
+        if (Response.data != 'ko') {
+          Promise.all([new Promise((resolve, reject) => {
+            this.props.GetMasq(Response.data, 
+              response => {
+              resolve();
+            }, error => {
+              console.log(error);
+            });
+          }), new Promise((resolve, reject) => {
+            this.props.GetLogo(Response.data, 
+              response => {
+              resolve();
+            }, error => {
+              console.log(error);
+            });
+          })
+        ]).then(() => {
           this.props.navigation.navigate('Main');
           Snackbar.show({
-            title: this.state.username + ' LOGGED IN',
+            title: this.state.username + ' LOGGED IN. DOWNLOADING ASSETS ...',
             duration: Snackbar.LENGTH_SHORT,
             action: {
               title: 'Welcome',
@@ -76,6 +103,7 @@ class LoginPage extends Component {
               },
             },
           });
+          }).catch(Error => console.log(Error));
         } else {
           Snackbar.show({
             title: 'INVALID CREDENTIALS',
@@ -159,14 +187,15 @@ class LoginPage extends Component {
                 marginLeft: getSize(20),
                 marginRight: getSize(20),
               }}>
-              {/* <AuthInput
+              <AuthInput
                 onChangeText={text =>
                   this.setState({
                     username: text,
                   })
                 }
+                autoCapitalize={'none'}
                 value={this.state.username}
-                placeholder={'Username'}
+                placeholder={'username'}
                 keyboard={'default'}
                 return={'next'}
                 secureTextEntry={false}
@@ -178,13 +207,14 @@ class LoginPage extends Component {
                     password: text,
                   })
                 }
+                autoCapitalize={'none'}
                 value={this.state.password}
-                placeholder={'Password'}
+                placeholder={'password'}
                 keyboard={'default'}
                 return={'next'}
                 secureTextEntry={true}
                 icon="lock1"
-              /> */}
+              />
 
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -198,7 +228,7 @@ class LoginPage extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                {this.props.isRequesting ? (
+                {this.props.isRequesting || this.props.isRequestingdata ? (
                   <ActivityIndicator size="small" color="#fff" />
                 ) : (
                   <Text
@@ -302,11 +332,14 @@ class LoginPage extends Component {
 const mapStateToProps = state => {
   return {
     isRequesting: state.Login.isRequesting,
+    isRequestingdata: state.Data.isRequesting,
   };
 };
 export default connect(
   mapStateToProps,
   {
     Login,
+    GetMasq,
+    GetLogo
   },
 )(LoginPage);

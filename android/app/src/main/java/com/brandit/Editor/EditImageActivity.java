@@ -85,14 +85,10 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         super.onCreate(savedInstanceState);
         makeFullScreen();
         setContentView(R.layout.activity_edit_image);
-
         initViews();
-
         mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
-
         try {
             if (getIntent().getExtras().getString("selectedImagePath") != null) {
-                 mPhotoEditorView.getSource().setScaleType(ImageView.ScaleType.CENTER_CROP);
                 Glide.with(this).load(getIntent().getExtras().getString("selectedImagePath")).into(mPhotoEditorView.getSource());
             }
             if (getIntent().getStringArrayListExtra("Stickers") != null) {
@@ -363,6 +359,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAMERA_REQUEST:

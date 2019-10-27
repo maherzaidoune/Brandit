@@ -28,6 +28,7 @@
         app:cameraGestureScrollHorizontal="exposureCorrection"
         app:cameraGestureScrollVertical="none"
         app:cameraMode="video"
+        app:cameraVideoSizeBiggest="true"
         app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker">
 
         <!-- Watermark -->

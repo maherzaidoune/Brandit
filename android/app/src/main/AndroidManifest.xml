@@ -26,7 +26,6 @@
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
         <activity
             android:name=".Editor.EditImageActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
@@ -36,9 +35,7 @@
             android:hardwareAccelerated="true">
         </activity>
 
-        <activity android:name=".Watermark.PicturePreviewActivity" />
 
-        <activity android:name=".Watermark.VideoPreviewActivity"/>
     </application>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
