@@ -67,9 +67,9 @@ public class PhotoEditorView extends RelativeLayout {
         mImgSource = new FilterImageView(getContext());
         mImgSource.setId(imgSrcId);
         mImgSource.setAdjustViewBounds(true);
-        mImgSource.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mImgSource.setScaleType(ImageView.ScaleType.CENTER_CROP);
         RelativeLayout.LayoutParams imgSrcParam = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         imgSrcParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         //imgSrcParam.width = (int) pxToDp(1080);
         if (attrs != null) {
@@ -86,7 +86,7 @@ public class PhotoEditorView extends RelativeLayout {
         mBrushDrawingView.setId(brushSrcId);
         //Align brush to the size of image view
         RelativeLayout.LayoutParams brushParam = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         brushParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         brushParam.addRule(RelativeLayout.ALIGN_TOP, imgSrcId);
         brushParam.addRule(RelativeLayout.ALIGN_BOTTOM, imgSrcId);
@@ -98,7 +98,7 @@ public class PhotoEditorView extends RelativeLayout {
 
         //Align brush to the size of image view
         RelativeLayout.LayoutParams imgFilterParam = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         imgFilterParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         imgFilterParam.addRule(RelativeLayout.ALIGN_TOP, imgSrcId);
         imgFilterParam.addRule(RelativeLayout.ALIGN_BOTTOM, imgSrcId);

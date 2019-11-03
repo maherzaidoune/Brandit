@@ -37,8 +37,8 @@ class MainPage extends Component {
       },
       cameraType: 'back',
       mediaType: 'photo',
-      quality: 1,
-      allowsEditing: false,
+      quality: 0.8,
+      allowsEditing: true,
     };
     ImagePicker.launchCamera(options, response => {
       console.log(response);
@@ -79,7 +79,7 @@ class MainPage extends Component {
       quality: 1,
       cameraType: 'back',
       mediaType: 'photo',
-      allowsEditing: false,
+      allowsEditing: true,
       storageOptions: {
         waitUntilSaved: true,
       },
