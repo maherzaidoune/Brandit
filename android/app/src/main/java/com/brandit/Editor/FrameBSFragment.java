@@ -39,6 +39,10 @@ public class FrameBSFragment extends BottomSheetDialogFragment {
         this.bitmaps = new ArrayList<>();
     }
 
+    public FrameBSFragment() {
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -138,6 +142,10 @@ public class FrameBSFragment extends BottomSheetDialogFragment {
 
         @Override
         public int getItemCount() {
+            if(stickerList == null){
+                dismiss();
+                return 0;
+            }
             return stickerList.size();
         }
 

@@ -1,7 +1,11 @@
 package com.brandit.Editor.base;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -71,5 +75,67 @@ public class BaseActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public float softkeyheight() {
+        Display d = getWindowManager().getDefaultDisplay();
+        DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+        d.getRealMetrics(realDisplayMetrics);
+
+        int realHeight = realDisplayMetrics.heightPixels;
+        int realWidth = realDisplayMetrics.widthPixels;
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        d.getMetrics(displayMetrics);
+
+        int displayHeight = displayMetrics.heightPixels;
+        int displayWidth = displayMetrics.widthPixels;
+
+        float h = realHeight - displayHeight - getStatusBarHeight(this);
+        if (h > 0) {
+            return h;
+        }
+        return 0;
+    }
+
+    public float statusHeight() {
+        return getStatusBarHeight(this);
+    }
+
+    public int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources()
+                .getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    public boolean hasSoftKey() {
+        Display d = this.getWindowManager().getDefaultDisplay();
+        DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+        d.getRealMetrics(realDisplayMetrics);
+
+        int realHeight = realDisplayMetrics.heightPixels;
+        int realWidth = realDisplayMetrics.widthPixels;
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        d.getMetrics(displayMetrics);
+
+        int displayHeight = displayMetrics.heightPixels;
+        int displayWidth = displayMetrics.widthPixels;
+
+        return (realWidth - displayWidth) > 0 ||
+                (realHeight - displayHeight) > 0;
+    }
+
+    public boolean hasNotch() {
+        return (getStatusBarHeight(this) > dpToPx(24));
+    }
+
+    public static int dpToPx(float dp) {
+        float density = Resources.getSystem().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 }

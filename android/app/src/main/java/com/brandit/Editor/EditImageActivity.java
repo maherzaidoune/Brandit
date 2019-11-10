@@ -3,6 +3,7 @@ package com.brandit.Editor;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,7 +16,9 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
@@ -71,7 +74,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private PropertiesBSFragment mPropertiesBSFragment;
     private EmojiBSFragment mEmojiBSFragment;
     private StickerBSFragment mStickerBSFragment;
-    private FrameBSFragment mFrameBSFragment ;
+    private FrameBSFragment mFrameBSFragment = null ;
     private TextView mTxtCurrentTool;
     private Typeface mWonderFont;
     private RecyclerView mRvTools, mRvFilters;
@@ -89,7 +92,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        makeFullScreen();
+        //makeFullScreen();
+
         setContentView(R.layout.activity_edit_image);
         initViews();
         mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
@@ -153,6 +157,14 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         mPhotoEditor.setOnPhotoEditorListener(this);
 
+        if(hasNotch() && hasSoftKey()){
+            mPhotoEditorView.setPadding(0, (int) statusHeight(), 0, (int) softkeyheight());
+        }else if (hasNotch()) {
+            mPhotoEditorView.setPadding(0, (int) statusHeight(), 0, 0);
+        } else if (hasSoftKey()) {
+            mPhotoEditorView.setPadding(0, (int) statusHeight(), 0, (int) softkeyheight());
+        }
+
         //Set Image Dynamically
         // mPhotoEditorView.getSource().setImageResource(R.drawable.color_palette);
 
@@ -168,29 +180,43 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 if (orientation == 0 || orientation == 180) {
                     ORIENTATION = 1;
                     Frames = masks;
+                    try{
+                        new Handler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(mFrameBSFragment.isVisible()){
+                                    mFrameBSFragment.dismiss();
+                                }
+                                //if(Frames != null){
+                                    mFrameBSFragment = new FrameBSFragment(masks);
+                                    mFrameBSFragment.setStickerListener(EditImageActivity.this);
+                                //}
+                            }
+                        });
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT ).show();
+                    }
                 } else if (orientation == 90 || orientation == 270) {
                     ORIENTATION = 2;
                     Frames = landscapemasks;
-                }
-                try{
-                    new Handler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(ORIENTATION == -1)
-                                return;
-                            if(mFrameBSFragment.isVisible()){
-                                Toast.makeText(getApplicationContext(), "visible", Toast.LENGTH_SHORT ).show();
-                                mFrameBSFragment.dismiss();
+                    try{
+                        new Handler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(mFrameBSFragment.isVisible()){
+                                    mFrameBSFragment.dismiss();
+                                }
+                                //if(Frames != null){
+                                    mFrameBSFragment = new FrameBSFragment(landscapemasks);
+                                    mFrameBSFragment.setStickerListener(EditImageActivity.this);
+                                //}
                             }
-                            if(Frames != null){
-                                mFrameBSFragment = new FrameBSFragment(Frames);
-                                mFrameBSFragment.setStickerListener(EditImageActivity.this);
-                            }
-                        }
-                    });
-                }catch (Exception e){
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "onOrientationChanged : " + e.getMessage(), Toast.LENGTH_SHORT ).show();
+                        });
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Exception " + e.getMessage(), Toast.LENGTH_SHORT ).show();
+                    }
                 }
             }
         };
@@ -556,10 +582,9 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 break;
             case FRAME:
                 try{
-                    Toast.makeText(getApplicationContext(), "frame click", Toast.LENGTH_SHORT).show();
                     mFrameBSFragment.show(getSupportFragmentManager(), mFrameBSFragment.getTag());
                 }catch (Exception e){
-                    Toast.makeText(getApplicationContext(), "exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -601,4 +626,5 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
             super.onBackPressed();
         }
     }
+
 }
