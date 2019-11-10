@@ -45,7 +45,8 @@ class MainPage extends Component {
       ImageEdit({
         path: response.path,
         Stickers: this.props.logo,
-        mask: this.props.mask
+        mask: this.props.mask,
+        landmasq: this.props.landmasq
     })
     });
   };
@@ -89,7 +90,8 @@ class MainPage extends Component {
       ImageEdit({
         path: response.path,
         Stickers: this.props.logo,
-        mask: this.props.mask
+        mask: this.props.mask,
+        landmasq: this.props.landmasq
     });
   });
   };

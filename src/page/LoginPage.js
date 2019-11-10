@@ -120,7 +120,7 @@ class LoginPage extends Component {
       },
       error => {
         Snackbar.show({
-          title: 'Error',
+          title: 'Error ' + error,
           duration: Snackbar.LENGTH_INDEFINITE,
           action: {
             title: 'ok',

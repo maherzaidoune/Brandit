@@ -11,10 +11,12 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
@@ -35,6 +37,7 @@ import com.brandit.Editor.tools.EditingToolsAdapter;
 import com.brandit.Editor.tools.ToolType;
 import com.brandit.R;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,7 +71,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private PropertiesBSFragment mPropertiesBSFragment;
     private EmojiBSFragment mEmojiBSFragment;
     private StickerBSFragment mStickerBSFragment;
-    private FrameBSFragment mFrameBSFragment;
+    private FrameBSFragment mFrameBSFragment ;
     private TextView mTxtCurrentTool;
     private Typeface mWonderFont;
     private RecyclerView mRvTools, mRvFilters;
@@ -79,6 +82,9 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private boolean mIsFilterVisible;
     ArrayList<String> Stickers;
     ArrayList<String> masks;
+    ArrayList<String> landscapemasks;
+    static ArrayList<String> Frames;
+    int  ORIENTATION = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,31 +97,45 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
             if (getIntent().getExtras().getString("selectedImagePath") != null) {
                 Glide.with(this).load(getIntent().getExtras().getString("selectedImagePath")).into(mPhotoEditorView.getSource());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try{
             if (getIntent().getStringArrayListExtra("Stickers") != null) {
                 Stickers = getIntent().getStringArrayListExtra("Stickers");
             }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
             if (getIntent().getStringArrayListExtra("mask") != null) {
                 masks = getIntent().getStringArrayListExtra("mask");
-                Log.i("mask == ", masks.size() + "");
+                Frames = masks;
             }
-        } catch (Exception e) {
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+            if (getIntent().getStringArrayListExtra("landmasq") != null) {
+                landscapemasks = getIntent().getStringArrayListExtra("landmasq");
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
 
 
+
+        mFrameBSFragment = new FrameBSFragment(masks);
+        mFrameBSFragment.setStickerListener(EditImageActivity.this);
         mPropertiesBSFragment = new PropertiesBSFragment();
         mEmojiBSFragment = new EmojiBSFragment();
         mStickerBSFragment = new StickerBSFragment(Stickers);
         mStickerBSFragment.setStickerListener(this);
-        mFrameBSFragment = new FrameBSFragment(masks);
-        mFrameBSFragment.setStickerListener(this);
         mEmojiBSFragment.setEmojiListener(this);
         mPropertiesBSFragment.setPropertiesChangeListener(this);
-
         LinearLayoutManager llmTools = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRvTools.setLayoutManager(llmTools);
         mRvTools.setAdapter(mEditingToolsAdapter);
-
         LinearLayoutManager llmFilters = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRvFilters.setLayoutManager(llmFilters);
         mRvFilters.setAdapter(mFilterViewAdapter);
@@ -135,6 +155,51 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         //Set Image Dynamically
         // mPhotoEditorView.getSource().setImageResource(R.drawable.color_palette);
+
+        OrientationEventListener mOrientationListener = new OrientationEventListener(
+                getApplicationContext()) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if ((orientation == 0 || orientation == 180) && ORIENTATION == 1)
+                    return;
+                if ((orientation == 90 || orientation == 270) && ORIENTATION == 2)
+                    return;
+
+                if (orientation == 0 || orientation == 180) {
+                    ORIENTATION = 1;
+                    Frames = masks;
+                } else if (orientation == 90 || orientation == 270) {
+                    ORIENTATION = 2;
+                    Frames = landscapemasks;
+                }
+                try{
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(ORIENTATION == -1)
+                                return;
+                            if(mFrameBSFragment.isVisible()){
+                                Toast.makeText(getApplicationContext(), "visible", Toast.LENGTH_SHORT ).show();
+                                mFrameBSFragment.dismiss();
+                            }
+                            if(Frames != null){
+                                mFrameBSFragment = new FrameBSFragment(Frames);
+                                mFrameBSFragment.setStickerListener(EditImageActivity.this);
+                            }
+                        }
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "onOrientationChanged : " + e.getMessage(), Toast.LENGTH_SHORT ).show();
+                }
+            }
+        };
+
+        if (mOrientationListener.canDetectOrientation()) {
+            mOrientationListener.enable();
+        }else{
+            Toast.makeText(getApplicationContext(), "can't detect orientation", Toast.LENGTH_LONG ).show();
+        }
     }
 
     private void initViews() {
@@ -490,7 +555,12 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
                 break;
             case FRAME:
-                mFrameBSFragment.show(getSupportFragmentManager(), mFrameBSFragment.getTag());
+                try{
+                    Toast.makeText(getApplicationContext(), "frame click", Toast.LENGTH_SHORT).show();
+                    mFrameBSFragment.show(getSupportFragmentManager(), mFrameBSFragment.getTag());
+                }catch (Exception e){
+                    Toast.makeText(getApplicationContext(), "exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

@@ -37,14 +37,14 @@ public class SnapshotVideoRecorder extends VideoRecorder implements RendererFram
     private static final String TAG = SnapshotVideoRecorder.class.getSimpleName();
     private static final CameraLogger LOG = CameraLogger.create(TAG);
 
-    private static final int DEFAULT_VIDEO_FRAMERATE = 50;
+    private static final int DEFAULT_VIDEO_FRAMERATE = 60;
     private static final int DEFAULT_AUDIO_BITRATE = 64000;
 
     // https://stackoverflow.com/a/5220554/4288782
     // Assuming low motion, we don't want to put this too high for default usage,
     // advanced users are still free to change this for each video.
     private static int estimateVideoBitRate(@NonNull Size size, int frameRate) {
-        return (int) (0.95F * 1F * size.getWidth() * size.getHeight() * frameRate);
+        return size.getWidth() * size.getHeight() * frameRate;
     }
 
     private static final int STATE_RECORDING = 0;
@@ -133,7 +133,8 @@ public class SnapshotVideoRecorder extends VideoRecorder implements RendererFram
             LOG.i("Starting the encoder engine.");
 
             // Set default options
-            if (mResult.videoFrameRate <= 0) mResult.videoFrameRate = DEFAULT_VIDEO_FRAMERATE;
+            //if (mResult.videoFrameRate <= 0)
+            mResult.videoFrameRate = DEFAULT_VIDEO_FRAMERATE;
             if (mResult.videoBitRate <= 0) mResult.videoBitRate
                     = estimateVideoBitRate(mResult.size, mResult.videoFrameRate);
             if (mResult.audioBitRate <= 0) mResult.audioBitRate = DEFAULT_AUDIO_BITRATE;
@@ -173,9 +174,9 @@ public class SnapshotVideoRecorder extends VideoRecorder implements RendererFram
                 }
             }
             mResult.size = newVideoSize;
-            mResult.videoBitRate = newVideoBitRate * 2;
-            mResult.audioBitRate = newAudioBitRate * 2;
-            mResult.videoFrameRate = newVideoFrameRate * 2;
+            mResult.videoBitRate = newVideoBitRate ;
+            mResult.audioBitRate = newAudioBitRate ;
+            mResult.videoFrameRate = newVideoFrameRate ;
 
             // Video
             TextureConfig videoConfig = new TextureConfig();

@@ -45,6 +45,8 @@ public class FrameBSFragment extends BottomSheetDialogFragment {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                if(Stickers == null || Stickers.size() == 0)
+                    return;
                 for (String s : Stickers) {
                     try {
                         Bitmap bitmap = Glide.with(context).asBitmap().load(s).submit().get();
