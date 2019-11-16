@@ -159,8 +159,8 @@ class LoginPage extends Component {
                 source={logo}
                 resizeMode={'contain'}
                 style={{
-                  height: getSize(37),
-                  width: getSize(188),
+                  height: getSize(120),
+                  width: getSize(120),
                 }}
               />
             </View>

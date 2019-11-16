@@ -41,8 +41,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void makeFullScreen() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     @Override
@@ -90,12 +92,13 @@ public class BaseActivity extends AppCompatActivity {
 
         int displayHeight = displayMetrics.heightPixels;
         int displayWidth = displayMetrics.widthPixels;
-
-        float h = realHeight - displayHeight - getStatusBarHeight(this);
-        if (h > 0) {
-            return h;
+        float h = 0;
+        if(this.getResources().getConfiguration().orientation == 1){
+             h = realHeight - displayHeight - getStatusBarHeight(this);
+        }else {
+            h = realWidth - displayWidth - getStatusBarHeight(this);
         }
-        return 0;
+        return h;
     }
 
     public float statusHeight() {

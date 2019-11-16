@@ -2,8 +2,8 @@ package com.brandit.Editor;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,9 +16,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
@@ -40,7 +38,6 @@ import com.brandit.Editor.tools.EditingToolsAdapter;
 import com.brandit.Editor.tools.ToolType;
 import com.brandit.R;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,7 +71,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private PropertiesBSFragment mPropertiesBSFragment;
     private EmojiBSFragment mEmojiBSFragment;
     private StickerBSFragment mStickerBSFragment;
-    private FrameBSFragment mFrameBSFragment = null ;
+    private FrameBSFragment mFrameBSFragment = null;
     private TextView mTxtCurrentTool;
     private Typeface mWonderFont;
     private RecyclerView mRvTools, mRvFilters;
@@ -87,13 +84,16 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     ArrayList<String> masks;
     ArrayList<String> landscapemasks;
     static ArrayList<String> Frames;
-    int  ORIENTATION = -1;
+    int ORIENTATION = 1;
+    int notchsize = 0;
+    int softkeysize = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //makeFullScreen();
-
+        notchsize = getStatusBarHeight(this);
+        softkeysize = (int) softkeyheight();
         setContentView(R.layout.activity_edit_image);
         initViews();
         mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
@@ -104,32 +104,31 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try{
+        try {
             if (getIntent().getStringArrayListExtra("Stickers") != null) {
                 Stickers = getIntent().getStringArrayListExtra("Stickers");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        try{
+        try {
             if (getIntent().getStringArrayListExtra("mask") != null) {
                 masks = getIntent().getStringArrayListExtra("mask");
                 Frames = masks;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        try{
+        try {
             if (getIntent().getStringArrayListExtra("landmasq") != null) {
                 landscapemasks = getIntent().getStringArrayListExtra("landmasq");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-
-        mFrameBSFragment = new FrameBSFragment(masks);
+        mFrameBSFragment = new FrameBSFragment(Frames);
         mFrameBSFragment.setStickerListener(EditImageActivity.this);
         mPropertiesBSFragment = new PropertiesBSFragment();
         mEmojiBSFragment = new EmojiBSFragment();
@@ -148,7 +147,6 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         Typeface mTextRobotoTf = ResourcesCompat.getFont(this, R.font.roboto_medium);
         Typeface mEmojiTypeFace = Typeface.createFromAsset(getAssets(), "emojione-android.ttf");
 
-
         mPhotoEditor = new PhotoEditor.Builder(this, mPhotoEditorView)
                 .setPinchTextScalable(true) // set flag to make text scalable when pinch
                 .setDefaultTextTypeface(mTextRobotoTf)
@@ -157,75 +155,67 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         mPhotoEditor.setOnPhotoEditorListener(this);
 
-        if(hasNotch() && hasSoftKey()){
-            mPhotoEditorView.setPadding(0, (int) statusHeight(), 0, (int) softkeyheight());
-        }else if (hasNotch()) {
-            mPhotoEditorView.setPadding(0, (int) statusHeight(), 0, 0);
-        } else if (hasSoftKey()) {
-            mPhotoEditorView.setPadding(0, (int) statusHeight(), 0, (int) softkeyheight());
-        }
+        if(this.getResources().getConfiguration().orientation == 1){
+            if(hasNotch() && hasSoftKey()){
+                notchsize = (int) statusHeight();
+                softkeysize = (int) softkeyheight();
+                mPhotoEditorView.setPadding(0, notchsize, 0, softkeysize);
+            }else if (hasNotch()) {
+                mPhotoEditorView.setPadding(0, notchsize, 0, 0);
+            } else if (hasSoftKey()) {
+                mPhotoEditorView.setPadding(0, notchsize, 0, softkeysize);
+            }
+            Frames = masks;
 
-        //Set Image Dynamically
-        // mPhotoEditorView.getSource().setImageResource(R.drawable.color_palette);
-
-        OrientationEventListener mOrientationListener = new OrientationEventListener(
-                getApplicationContext()) {
-            @Override
-            public void onOrientationChanged(int orientation) {
-                if ((orientation == 0 || orientation == 180) && ORIENTATION == 1)
-                    return;
-                if ((orientation == 90 || orientation == 270) && ORIENTATION == 2)
-                    return;
-
-                if (orientation == 0 || orientation == 180) {
-                    ORIENTATION = 1;
-                    Frames = masks;
-                    try{
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(mFrameBSFragment.isVisible()){
-                                    mFrameBSFragment.dismiss();
-                                }
-                                //if(Frames != null){
-                                    mFrameBSFragment = new FrameBSFragment(masks);
-                                    mFrameBSFragment.setStickerListener(EditImageActivity.this);
-                                //}
-                            }
-                        });
-                    }catch (Exception e){
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (mFrameBSFragment.isVisible()) {
+                            mFrameBSFragment.dismiss();
+                        }
+                        mFrameBSFragment = new FrameBSFragment(masks);
+                        mFrameBSFragment.setStickerListener(EditImageActivity.this);
+                    } catch (Exception e) {
                         e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT ).show();
-                    }
-                } else if (orientation == 90 || orientation == 270) {
-                    ORIENTATION = 2;
-                    Frames = landscapemasks;
-                    try{
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(mFrameBSFragment.isVisible()){
-                                    mFrameBSFragment.dismiss();
-                                }
-                                //if(Frames != null){
-                                    mFrameBSFragment = new FrameBSFragment(landscapemasks);
-                                    mFrameBSFragment.setStickerListener(EditImageActivity.this);
-                                //}
-                            }
-                        });
-                    }catch (Exception e){
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Exception " + e.getMessage(), Toast.LENGTH_SHORT ).show();
+                        Toast.makeText(getApplicationContext(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-        };
-
-        if (mOrientationListener.canDetectOrientation()) {
-            mOrientationListener.enable();
+            });
         }else{
-            Toast.makeText(getApplicationContext(), "can't detect orientation", Toast.LENGTH_LONG ).show();
+            if(hasNotch() && hasSoftKey()){
+                Toast.makeText(getApplicationContext(), "has both , softkeyheight = " + softkeyheight() + " statusHeight = " + statusHeight(), Toast.LENGTH_LONG).show();
+                mPhotoEditorView.setPadding(notchsize + 10, 0,  softkeysize, 0);
+            }else if (hasNotch()) {
+                Toast.makeText(getApplicationContext(), "has notch", Toast.LENGTH_LONG).show();
+                mPhotoEditorView.setPadding(notchsize, 0, 0, 0);
+            } else if (hasSoftKey()) {
+                Toast.makeText(getApplicationContext(), "has soft", Toast.LENGTH_LONG).show();
+                mPhotoEditorView.setPadding(notchsize, 0,  softkeysize, 0);
+            }
+            Frames = landscapemasks;
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (mFrameBSFragment.isVisible()) {
+                            mFrameBSFragment.dismiss();
+                        }
+                        //if(Frames != null){
+                        mFrameBSFragment = new FrameBSFragment(landscapemasks);
+                        mFrameBSFragment.setStickerListener(EditImageActivity.this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Exception " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
+
+
+
+//        Set Image Dynamically
+//         mPhotoEditorView.getSource().setImageResource(R.drawable.color_palette);
     }
 
     private void initViews() {
@@ -500,9 +490,9 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     @Override
     public void onStickerClick(Bitmap bitmap, boolean isFrame) {
         mPhotoEditor.addImage(bitmap, isFrame);
-        if(isFrame){
+        if (isFrame) {
             mTxtCurrentTool.setText("Template");
-        }else{
+        } else {
             mTxtCurrentTool.setText(R.string.label_sticker);
         }
     }
@@ -560,7 +550,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                     public void onDone(String inputText, int colorCode) {
                         final TextStyleBuilder styleBuilder = new TextStyleBuilder();
                         styleBuilder.withTextColor(colorCode);
-
+                        styleBuilder.withTextSize(15.0f);
                         mPhotoEditor.addText(inputText, styleBuilder);
                         mTxtCurrentTool.setText(R.string.label_text);
                     }
@@ -581,9 +571,9 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
                 break;
             case FRAME:
-                try{
+                try {
                     mFrameBSFragment.show(getSupportFragmentManager(), mFrameBSFragment.getTag());
-                }catch (Exception e){
+                } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 break;
