@@ -81,7 +81,7 @@ public class PhotoEditor implements BrushViewChangeListener {
         final ImageView imgClose = imageRootView.findViewById(R.id.imgPhotoEditorClose);
 
         imageView.setImageBitmap(desiredImage);
-        //imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         if(!isFrame){
             MultiTouchListener multiTouchListener = getMultiTouchListener();
             multiTouchListener.setOnGestureControl(new MultiTouchListener.OnGestureControl() {

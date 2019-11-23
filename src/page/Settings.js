@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StatusBar, View, ImageBackground, Text, TouchableOpacity, Alert} from 'react-native';
+import {StatusBar, View, ImageBackground, Text, TouchableOpacity, Alert, AsyncStorage} from 'react-native';
 import {getSize} from '../utils/UiUtils';
 import Icon from 'react-native-vector-icons/AntDesign';
 
@@ -15,7 +15,15 @@ export default class Settings extends Component {
             'Are you sure ?',
             [
               {text: 'Yes', 
-              onPress: () => this.props.navigation.navigate('Login'),
+              onPress: () => {
+                try{
+                  AsyncStorage.removeItem("username");
+                  AsyncStorage.removeItem("password");
+                }catch(e){
+                  Console.log(e);
+                }
+                this.props.navigation.navigate('Login')
+              },
               style: 'destructive'
             },
               

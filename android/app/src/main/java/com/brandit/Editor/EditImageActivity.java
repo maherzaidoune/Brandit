@@ -142,6 +142,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         LinearLayoutManager llmFilters = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRvFilters.setLayoutManager(llmFilters);
         mRvFilters.setAdapter(mFilterViewAdapter);
+        mPhotoEditorView.getSource().setScaleType(ImageView.ScaleType.FIT_CENTER);
 
 
         Typeface mTextRobotoTf = ResourcesCompat.getFont(this, R.font.roboto_medium);
@@ -159,11 +160,11 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
             if(hasNotch() && hasSoftKey()){
                 notchsize = (int) statusHeight();
                 softkeysize = (int) softkeyheight();
-                mPhotoEditorView.setPadding(0, notchsize, 0, softkeysize);
+                mPhotoEditorView.setPadding(0, notchsize, 0, softkeysize - 30);
             }else if (hasNotch()) {
                 mPhotoEditorView.setPadding(0, notchsize, 0, 0);
             } else if (hasSoftKey()) {
-                mPhotoEditorView.setPadding(0, notchsize, 0, softkeysize);
+                mPhotoEditorView.setPadding(0, notchsize, 0, softkeysize - 30);
             }
             Frames = masks;
 
@@ -180,12 +181,13 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
+
                 }
             });
         }else{
             if(hasNotch() && hasSoftKey()){
                 Toast.makeText(getApplicationContext(), "has both , softkeyheight = " + softkeyheight() + " statusHeight = " + statusHeight(), Toast.LENGTH_LONG).show();
-                mPhotoEditorView.setPadding(notchsize + 10, 0,  softkeysize, 0);
+                mPhotoEditorView.setPadding(notchsize + 50, 0,  softkeysize + 50, 0);
             }else if (hasNotch()) {
                 Toast.makeText(getApplicationContext(), "has notch", Toast.LENGTH_LONG).show();
                 mPhotoEditorView.setPadding(notchsize, 0, 0, 0);

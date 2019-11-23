@@ -11,7 +11,6 @@ import {
   } from '../actions/types';
 
   const INITIAL_STATE = {
-    imageUrl: "https://brandit.tn/admin/",
     isRequesting: false,
     masq: [],
     landmasq: [],
@@ -24,13 +23,13 @@ import {
       case GET_MASK:
         return {...state, isRequesting: true};
       case GET_MASK_SUCCESS:
-        return {...state, isRequesting: false, masq: action.payload.data.filter(i => i.orientation == 2).map(v => state.imageUrl + v.image) , landmasq: action.payload.data.filter(i => i.orientation == 1).map(v => state.imageUrl + v.image)};
+        return {...state, isRequesting: false, masq: action.payload.data.filter(i => i.orientation == 2).map(v => v.image) , landmasq: action.payload.data.filter(i => i.orientation == 1).map(v => v.image)};
       case GET_MASK_FAILED:
         return {...state, isRequesting: false, logo: []};
       case GET_LOGO:
         return {...state, isRequesting: true};
       case GET_LOGO_SUCCESS:
-        return {...state, isRequesting: false, logo: action.payload.data.map(v => state.imageUrl + v.image)};
+        return {...state, isRequesting: false, logo: action.payload.data.map(v => v.image)};
       case GET_LOGO_FAILED:
         return {...state, isRequesting: false, logo: []};
       default:

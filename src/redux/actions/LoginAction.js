@@ -13,7 +13,7 @@ export const Login = (username, password, callback, callbackError) => {
     return dispatch => {
         dispatch({ type: LOGIN_USER });
         axios
-          .get(`http://brandit.tn/api/action_login/?login=${username}&pass=${password}`, { timeout: 5000 })
+          .get(`https://editor.qamous.net/api/action_login/?login=${username}&pass=${password}`, { timeout: 5000 })
           .then(response => {
             dispatch({ type: LOGIN_USER_SUCCESS, payload: response });
             callback(response);

@@ -16,7 +16,7 @@ export const GetMasq = (id, callback, callbackError) => {
     return dispatch => {
         dispatch({ type: GET_MASK });
         axios
-          .post(`http://brandit.tn/admin/api/masques_mobile/?id=${id}`, { timeout: 5000 })
+          .post(`https://editor.qamous.net/api/masques_mobile/?id=${id}`, { timeout: 5000 })
           .then(response => {
             dispatch({ type: GET_MASK_SUCCESS, payload: response });
             callback(response);
@@ -32,7 +32,7 @@ export const GetMasq = (id, callback, callbackError) => {
     return dispatch => {
         dispatch({ type: GET_LOGO });
         axios
-          .post(`http://brandit.tn/admin/api/logos/?id=${id}`, { timeout: 5000 })
+          .post(`https://editor.qamous.net/api/logos/?id=${id}`, { timeout: 5000 })
           .then(response => {
             dispatch({ type: GET_LOGO_SUCCESS, payload: response });
             callback(response);
@@ -48,7 +48,7 @@ export const GetMasq = (id, callback, callbackError) => {
     return dispatch => {
         dispatch({ type: GET_ICONS });
         axios
-          .post(`http://brandit.tn/admin/api/icones/?id=${id}`, { timeout: 5000 })
+          .post(`https://editor.qamous.net/api/icones/?id=${id}`, { timeout: 5000 })
           .then(response => {
             dispatch({ type: GET_ICONS_SUCCESS, payload: response });
             callback(response);

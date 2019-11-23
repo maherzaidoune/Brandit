@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  AsyncStorage,
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
 import {getSize} from '../utils/UiUtils';
@@ -14,6 +15,7 @@ import AuthInput from '../component/AuthInput';
 import CheckBox from '../utils/react-native-check-box/index.js';
 import {connect} from 'react-redux';
 import {Login, GetMasq, GetLogo} from '../redux/actions';
+
 const background = require('../images/background_screen.png');
 const line = require('../images/line.png');
 const logo = require('../images/logo.png');
@@ -29,20 +31,44 @@ class LoginPage extends Component {
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     //dev
-    if (__DEV__) {
-      console.log('I am in debug');
-      this.setState({
-        username: 'coffee',
-        password: 'coffee'
-      }, () => this.login())
-  }
-    
+    //   if (__DEV__) {
+    //     console.log('I am in debug');
+    //     this.setState({
+    //       username: 'coffee',
+    //       password: 'coffee'
+    //     }, () => this.login())
+    // }
+    try {
+      AsyncStorage.getItem('username')
+        .then(username => {
+          AsyncStorage.getItem('password').then(password => {
+            console.log("password == " + password);
+            console.log("username == " + username);
+            if(password != null && username != null){
+               this.setState({password, username} ,() => this.login());
+            }
+          });
+        })
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   login = () => {
-    if(this.state.username.length < 1){
+    if (this.state.rememberMe) {
+      try {
+        console.log('this.state.rememberMe == ' + this.state.rememberMe);
+        console.log('this.state.username == ' + this.state.username);
+        console.log('this.state.password == ' + this.state.password);
+        AsyncStorage.setItem('username', this.state.username);
+        AsyncStorage.setItem('password', this.state.password);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    if (this.state.username.length < 1) {
       Snackbar.show({
         title: 'INVALID USERNAME',
         duration: Snackbar.LENGTH_SHORT,
@@ -55,7 +81,7 @@ class LoginPage extends Component {
         },
       });
       return;
-    }else if(this.state.password.length < 1){
+    } else if (this.state.password.length < 1) {
       Snackbar.show({
         title: 'INVALID PASSWORD',
         duration: Snackbar.LENGTH_SHORT,
@@ -75,35 +101,46 @@ class LoginPage extends Component {
       this.state.password,
       Response => {
         if (Response.data != 'ko') {
-          Promise.all([new Promise((resolve, reject) => {
-            this.props.GetMasq(Response.data, 
-              response => {
-              resolve();
-            }, error => {
-              console.log(error);
-            });
-          }), new Promise((resolve, reject) => {
-            this.props.GetLogo(Response.data, 
-              response => {
-              resolve();
-            }, error => {
-              console.log(error);
-            });
-          })
-        ]).then(() => {
-          this.props.navigation.navigate('Main');
-          Snackbar.show({
-            title: this.state.username + ' LOGGED IN. DOWNLOADING ASSETS ...',
-            duration: Snackbar.LENGTH_SHORT,
-            action: {
-              title: 'Welcome',
-              color: 'green',
-              onPress: () => {
-                /* Do something. */
-              },
-            },
-          });
-          }).catch(Error => console.log(Error));
+          Promise.all([
+            new Promise((resolve, reject) => {
+              this.props.GetMasq(
+                Response.data,
+                response => {
+                  resolve();
+                },
+                error => {
+                  console.log(error);
+                },
+              );
+            }),
+            new Promise((resolve, reject) => {
+              this.props.GetLogo(
+                Response.data,
+                response => {
+                  resolve();
+                },
+                error => {
+                  console.log(error);
+                },
+              );
+            }),
+          ])
+            .then(() => {
+              this.props.navigation.navigate('Main');
+              Snackbar.show({
+                title:
+                  this.state.username + ' LOGGED IN. DOWNLOADING ASSETS ...',
+                duration: Snackbar.LENGTH_SHORT,
+                action: {
+                  title: 'Welcome',
+                  color: 'green',
+                  onPress: () => {
+                    /* Do something. */
+                  },
+                },
+              });
+            })
+            .catch(Error => console.log(Error));
         } else {
           Snackbar.show({
             title: 'INVALID CREDENTIALS',
@@ -335,11 +372,8 @@ const mapStateToProps = state => {
     isRequestingdata: state.Data.isRequesting,
   };
 };
-export default connect(
-  mapStateToProps,
-  {
-    Login,
-    GetMasq,
-    GetLogo
-  },
-)(LoginPage);
+export default connect(mapStateToProps, {
+  Login,
+  GetMasq,
+  GetLogo,
+})(LoginPage);

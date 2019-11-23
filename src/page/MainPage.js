@@ -23,9 +23,8 @@ import {ImageEdit} from '../../ImageEditNativeModule';
 import {VideoWatermark} from '../../VideoWatermarkNativeModule';
 
 class MainPage extends Component {
-
-  constructor(props){
-    super(props);  
+  constructor(props) {
+    super(props);
   }
 
   _takePhoto = () => {
@@ -42,12 +41,14 @@ class MainPage extends Component {
     };
     ImagePicker.launchCamera(options, response => {
       console.log(response);
-      ImageEdit({
-        path: response.path,
-        Stickers: this.props.logo,
-        mask: this.props.mask,
-        landmasq: this.props.landmasq
-    })
+      if (response != null && !response.didCancel) {
+        ImageEdit({
+          path: response.path,
+          Stickers: this.props.logo,
+          mask: this.props.mask,
+          landmasq: this.props.landmasq,
+        });
+      }
     });
   };
 
@@ -63,12 +64,12 @@ class MainPage extends Component {
     // };
     // ImagePicker.launchCamera(options, response => {
     //   console.log(response);
-      
+
     // });
     VideoWatermark({
       mask: this.props.mask,
-      landmasq: this.props.landmasq
-  });
+      landmasq: this.props.landmasq,
+    });
   };
 
   _openLibrary = () => {
@@ -87,13 +88,15 @@ class MainPage extends Component {
     };
     ImagePicker.launchImageLibrary(options, response => {
       console.log(response);
-      ImageEdit({
-        path: response.path,
-        Stickers: this.props.logo,
-        mask: this.props.mask,
-        landmasq: this.props.landmasq
+      if (response != null && !response.didCancel) {
+        ImageEdit({
+          path: response.path,
+          Stickers: this.props.logo,
+          mask: this.props.mask,
+          landmasq: this.props.landmasq,
+        });
+      }
     });
-  });
   };
 
   render() {
@@ -202,12 +205,7 @@ const mapStateToProps = state => {
     isRequesting: state.Data.isRequesting,
     mask: state.Data.masq,
     logo: state.Data.logo,
-    landmasq: state.Data.landmasq
+    landmasq: state.Data.landmasq,
   };
 };
-export default connect(
-  mapStateToProps,
-  {
-  },
-)(MainPage);
-
+export default connect(mapStateToProps, {})(MainPage);
