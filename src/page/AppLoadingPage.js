@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
-import {Text, View, ImageBackground, StatusBar} from 'react-native';
+import {Image, View, ImageBackground, StatusBar} from 'react-native';
+import {getSize} from '../utils/UiUtils';
 
-const background = require('../images/background.png');
+const background = require('../images/background_screen.png');
+const logo = require('../images/logo.png');
+
 export default class AppLoadingPage extends Component {
   constructor(props) {
     super(props);
@@ -29,7 +32,15 @@ export default class AppLoadingPage extends Component {
         />
         <ImageBackground
           source={background}
-          style={{width: '100%', height: '100%'}}></ImageBackground>
+          style={{width: '100%', height: '100%', alignItems: 'center' , justifyContent: 'center'}}>
+              <Image source={logo} 
+              resizeMode="center"
+              style={{
+                height: getSize(150),
+                width: getSize(150),
+              }}
+              />
+          </ImageBackground>
       </View>
     );
   }

@@ -66,6 +66,8 @@ class MainPage extends Component {
     //   console.log(response);
 
     // });
+    console.log("this.props.mask == " + this.props.mask);
+    console.log("this.props.landmasq == " + this.props.landmasq);
     VideoWatermark({
       mask: this.props.mask,
       landmasq: this.props.landmasq,
@@ -135,14 +137,7 @@ class MainPage extends Component {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Image
-                  source={logo}
-                  resizeMode={'contain'}
-                  style={{
-                    height: getSize(37),
-                    width: getSize(188),
-                  }}
-                />
+                
               </View>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Settings')}

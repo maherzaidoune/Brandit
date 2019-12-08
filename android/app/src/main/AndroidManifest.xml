@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.brandit">
+    package="com.qamouseditor">
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 
     <application
-        android:name=".MainApplication"
+        android:name="com.qamouseditor.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,7 +16,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="m">
         <activity
-            android:name=".MainActivity"
+            android:name="com.qamouseditor.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize">
@@ -27,12 +27,12 @@
         </activity>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
         <activity
-            android:name=".Editor.EditImageActivity"
+            android:name="com.qamouseditor.Editor.EditImageActivity"
             android:theme="@style/AppTheme.NoActionBar"
             >
         </activity>
         <activity
-            android:name=".Watermark.CameraActivity"
+            android:name="com.qamouseditor.Watermark.CameraActivity"
             android:theme="@style/Theme.MainActivity"
             android:configChanges="screenLayout|keyboardHidden"
             android:hardwareAccelerated="true">

@@ -188,16 +188,17 @@ class LoginPage extends Component {
             }}>
             <View
               style={{
-                flex: 0.25,
+                flex: 0.3,
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: "flex-end",
+                paddingBottom: 5
               }}>
               <Image
                 source={logo}
-                resizeMode={'contain'}
+                resizeMode={'center'}
                 style={{
-                  height: getSize(120),
-                  width: getSize(120),
+                  height: getSize(130),
+                  width: getSize(130),
                 }}
               />
             </View>
@@ -218,7 +219,7 @@ class LoginPage extends Component {
             </View>
             <View
               style={{
-                flex: 0.5,
+                flex: 0.45,
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 marginLeft: getSize(20),
