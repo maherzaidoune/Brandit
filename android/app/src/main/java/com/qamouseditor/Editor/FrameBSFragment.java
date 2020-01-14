@@ -5,21 +5,20 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import com.qamouseditor.R;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.qamouseditor.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +33,8 @@ public class FrameBSFragment extends BottomSheetDialogFragment {
     public FrameBSFragment(ArrayList<String> Stickers) {
         // Required empty public constructor
         this.Stickers = Stickers;
+        if (this.Stickers != null && !this.Stickers.contains("https://admin.qamous.net/delete_button-01.png"))
+            this.Stickers.add(0, "https://admin.qamous.net/delete_button-01.png");
         this.bitmaps = new ArrayList<>();
     }
 
@@ -47,7 +48,7 @@ public class FrameBSFragment extends BottomSheetDialogFragment {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                if(Stickers == null || Stickers.size() == 0)
+                if (Stickers == null || Stickers.size() == 0)
                     return;
                 for (String s : Stickers) {
                     try {
@@ -140,7 +141,7 @@ public class FrameBSFragment extends BottomSheetDialogFragment {
 
         @Override
         public int getItemCount() {
-            if(stickerList == null){
+            if (stickerList == null) {
                 dismiss();
                 return 0;
             }
@@ -160,7 +161,7 @@ public class FrameBSFragment extends BottomSheetDialogFragment {
                         if (mStickerListener != null) {
 //                            mStickerListener.onStickerClick(
 //                                    BitmapFactory.decodeFile(files.get(getLayoutPosition()).getPath()));
-                            mStickerListener.onStickerClick(bitmaps.get(getLayoutPosition()), true);
+                            mStickerListener.onStickerClick(bitmaps.get(getLayoutPosition()), true, getLayoutPosition());
                         }
                         dismiss();
                     }

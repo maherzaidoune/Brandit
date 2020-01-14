@@ -41,16 +41,15 @@ class LoginPage extends Component {
     //     }, () => this.login())
     // }
     try {
-      AsyncStorage.getItem('username')
-        .then(username => {
-          AsyncStorage.getItem('password').then(password => {
-            console.log("password == " + password);
-            console.log("username == " + username);
-            if(password != null && username != null){
-               this.setState({password, username} ,() => this.login());
-            }
-          });
-        })
+      AsyncStorage.getItem('username').then(username => {
+        AsyncStorage.getItem('password').then(password => {
+          console.log('password == ' + password);
+          console.log('username == ' + username);
+          if (password != null && username != null) {
+            this.setState({password, username}, () => this.login());
+          }
+        });
+      });
     } catch (e) {
       console.log(e);
     }
@@ -59,9 +58,6 @@ class LoginPage extends Component {
   login = () => {
     if (this.state.rememberMe) {
       try {
-        console.log('this.state.rememberMe == ' + this.state.rememberMe);
-        console.log('this.state.username == ' + this.state.username);
-        console.log('this.state.password == ' + this.state.password);
         AsyncStorage.setItem('username', this.state.username);
         AsyncStorage.setItem('password', this.state.password);
       } catch (e) {
@@ -101,46 +97,49 @@ class LoginPage extends Component {
       this.state.password,
       Response => {
         if (Response.data != 'ko') {
-          Promise.all([
-            new Promise((resolve, reject) => {
-              this.props.GetMasq(
-                Response.data,
-                response => {
-                  resolve();
-                },
-                error => {
-                  console.log(error);
-                },
-              );
-            }),
-            new Promise((resolve, reject) => {
-              this.props.GetLogo(
-                Response.data,
-                response => {
-                  resolve();
-                },
-                error => {
-                  console.log(error);
-                },
-              );
-            }),
-          ])
-            .then(() => {
-              this.props.navigation.navigate('Main');
-              Snackbar.show({
-                title:
-                  this.state.username + ' LOGGED IN. DOWNLOADING ASSETS ...',
-                duration: Snackbar.LENGTH_SHORT,
-                action: {
-                  title: 'Welcome',
-                  color: 'green',
-                  onPress: () => {
-                    /* Do something. */
+          AsyncStorage.setItem('id', Response.data + "").then((id) => {
+            console.log("id = "+id);
+            Promise.all([
+              new Promise((resolve, reject) => {
+                this.props.GetMasq(
+                  Response.data,
+                  response => {
+                    resolve();
                   },
-                },
-              });
-            })
-            .catch(Error => console.log(Error));
+                  error => {
+                    console.log(error);
+                  },
+                );
+              }),
+              new Promise((resolve, reject) => {
+                this.props.GetLogo(
+                  Response.data,
+                  response => {
+                    resolve();
+                  },
+                  error => {
+                    console.log(error);
+                  },
+                );
+              }),
+            ])
+              .then(() => {
+                this.props.navigation.navigate('Main');
+                Snackbar.show({
+                  title:
+                    this.state.username + ' LOGGED IN. DOWNLOADING ASSETS ...',
+                  duration: Snackbar.LENGTH_SHORT,
+                  action: {
+                    title: 'Welcome',
+                    color: 'green',
+                    onPress: () => {
+                      /* Do something. */
+                    },
+                  },
+                });
+              })
+              .catch(Error => console.log(Error));
+          });
         } else {
           Snackbar.show({
             title: 'INVALID CREDENTIALS',
@@ -190,15 +189,15 @@ class LoginPage extends Component {
               style={{
                 flex: 0.3,
                 alignItems: 'center',
-                justifyContent: "flex-end",
-                paddingBottom: 5
+                justifyContent: 'flex-end',
+                paddingBottom: 5,
               }}>
               <Image
                 source={logo}
                 resizeMode={'center'}
                 style={{
-                  height: getSize(130),
-                  width: getSize(130),
+                  height: getSize(120),
+                  width: getSize(120),
                 }}
               />
             </View>
@@ -212,7 +211,7 @@ class LoginPage extends Component {
                 source={user}
                 resizeMode={'contain'}
                 style={{
-                  height: getSize(121),
+                  height: getSize(111),
                   width: getSize(305),
                 }}
               />

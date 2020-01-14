@@ -95,22 +95,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         notchsize = getStatusBarHeight(this);
         softkeysize = (int) softkeyheight();
         setContentView(R.layout.activity_edit_image);
-        hide = findViewById(R.id.hide);
-        hide.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ismRvToolsVisible){
-                    mRvTools.setVisibility(View.GONE);
-                    hide.setImageResource(R.drawable.ic_chevron_arrow_up);
-                    ismRvToolsVisible = false;
-                }else{
-                    mRvTools.setVisibility(View.VISIBLE);
-                    hide.setImageResource(R.drawable.ic_chevron_arrow_down);
-                    ismRvToolsVisible = true;
-                }
 
-            }
-        });
         initViews();
         mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
         try {
@@ -190,9 +175,13 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                     try {
                         if (mFrameBSFragment.isVisible()) {
                             mFrameBSFragment.dismiss();
+                        } if(mStickerBSFragment.isVisible()){
+                            mStickerBSFragment.dismiss();
                         }
                         mFrameBSFragment = new FrameBSFragment(masks);
                         mFrameBSFragment.setStickerListener(EditImageActivity.this);
+                        mStickerBSFragment = new StickerBSFragment(Stickers);
+                        mStickerBSFragment.setStickerListener(EditImageActivity.this);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -219,9 +208,14 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                         if (mFrameBSFragment.isVisible()) {
                             mFrameBSFragment.dismiss();
                         }
+                        if(mStickerBSFragment.isVisible()){
+                            mStickerBSFragment.dismiss();
+                        }
                         //if(Frames != null){
                         mFrameBSFragment = new FrameBSFragment(landscapemasks);
                         mFrameBSFragment.setStickerListener(EditImageActivity.this);
+                        mStickerBSFragment = new StickerBSFragment(Stickers);
+                        mStickerBSFragment.setStickerListener(EditImageActivity.this);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "Exception " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -229,9 +223,24 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 }
             });
         }
+        hide = findViewById(R.id.hide);
+        if(hide != null){
+            hide.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ismRvToolsVisible){
+                        mRvTools.setVisibility(View.GONE);
+                        hide.setImageResource(R.drawable.ic_chevron_arrow_up);
+                        ismRvToolsVisible = false;
+                    }else{
+                        mRvTools.setVisibility(View.VISIBLE);
+                        hide.setImageResource(R.drawable.ic_chevron_arrow_down);
+                        ismRvToolsVisible = true;
+                    }
 
-
-
+                }
+            });
+        }
 //        Set Image Dynamically
 //         mPhotoEditorView.getSource().setImageResource(R.drawable.color_palette);
     }
@@ -506,8 +515,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     }
 
     @Override
-    public void onStickerClick(Bitmap bitmap, boolean isFrame) {
-        mPhotoEditor.addImage(bitmap, isFrame);
+    public void onStickerClick(Bitmap bitmap, boolean isFrame, int position) {
+        mPhotoEditor.addImage(bitmap, isFrame, position);
         if (isFrame) {
             mTxtCurrentTool.setText("Template");
         } else {
@@ -583,10 +592,18 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 showFilter(true);
                 break;
             case EMOJI:
-                mEmojiBSFragment.show(getSupportFragmentManager(), mEmojiBSFragment.getTag());
+                try {
+                    mEmojiBSFragment.show(getSupportFragmentManager(), mEmojiBSFragment.getTag());
+                }catch (Exception e){
+
+                }
                 break;
             case STICKER:
-                mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
+                try{
+                    mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
+                }catch (Exception e){
+
+                }
                 break;
             case FRAME:
                 try {

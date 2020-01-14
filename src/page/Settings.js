@@ -1,41 +1,47 @@
 import React, {Component} from 'react';
-import {StatusBar, View, ImageBackground, Text, TouchableOpacity, Alert, AsyncStorage} from 'react-native';
+import {
+  StatusBar,
+  View,
+  ImageBackground,
+  Text,
+  TouchableOpacity,
+  Alert,
+  AsyncStorage,
+} from 'react-native';
 import {getSize} from '../utils/UiUtils';
 import Icon from 'react-native-vector-icons/AntDesign';
-
 
 const background = require('../images/background_screen.png');
 
 export default class Settings extends Component {
+  loggout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure ?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            try {
+              AsyncStorage.removeItem('username');
+              AsyncStorage.removeItem('password');
+            } catch (e) {
+              Console.log(e);
+            }
+            this.props.navigation.navigate('Login');
+          },
+          style: 'destructive',
+        },
 
-
-    loggout = () => {
-        Alert.alert(
-            'Logout',
-            'Are you sure ?',
-            [
-              {text: 'Yes', 
-              onPress: () => {
-                try{
-                  AsyncStorage.removeItem("username");
-                  AsyncStorage.removeItem("password");
-                }catch(e){
-                  Console.log(e);
-                }
-                this.props.navigation.navigate('Login')
-              },
-              style: 'destructive'
-            },
-              
-              {
-                text: 'No',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-            ],
-            {cancelable: true},
-          );
-    }
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+      ],
+      {cancelable: true},
+    );
+  };
   render() {
     return (
       <View>
@@ -65,8 +71,12 @@ export default class Settings extends Component {
                 flex: 1,
               }}>
               <TouchableOpacity
-              onPress={() => this.props.navigation.goBack()}
-               style={{flex: 0.2, justifyContent: 'center', alignItems: 'center'}}>
+                onPress={() => this.props.navigation.goBack()}
+                style={{
+                  flex: 0.2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
                 <Icon name={'left'} size={getSize(26)} color="#fff" />
               </TouchableOpacity>
               <View
@@ -81,7 +91,7 @@ export default class Settings extends Component {
                     fontSize: getSize(22),
                     fontWeight: 'bold',
                     textAlign: 'center',
-                    textAlignVertical: 'center'
+                    textAlignVertical: 'center',
                   }}>
                   SETTINGS
                 </Text>
@@ -93,82 +103,77 @@ export default class Settings extends Component {
                   alignItems: 'center',
                 }}></View>
             </View>
-          <View
-          style={{
-              flex: 1,
-              marginTop: getSize(110),
-              justifyContent: 'flex-start',
-              alignItems: 'flex-start'
-          }}
-          >
-            <TouchableOpacity
+            <View
+              style={{
+                flex: 1,
+                marginTop: getSize(110),
+                justifyContent: 'flex-start',
+                alignItems: 'flex-start',
+              }}>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('ChangePass')}
                 style={{
-                    height: getSize(50),
-                    width: '100%',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    paddingRight: getSize(30),
-                    paddingLeft: getSize(30),
-                    marginTop: getSize(10),
-                }}
-            >
+                  height: getSize(50),
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  paddingRight: getSize(30),
+                  paddingLeft: getSize(30),
+                  marginTop: getSize(10),
+                }}>
                 <Text
-                    style={{
-                        color: '#fff',
-                        fontSize: getSize(18),
-                        fontWeight: '400',
-                        textAlignVertical: 'center'
-                    }}
-                >
-                    CHANGE PASSWORD
+                  style={{
+                    color: '#fff',
+                    fontSize: getSize(18),
+                    fontWeight: '400',
+                    textAlignVertical: 'center',
+                  }}>
+                  CHANGE PASSWORD
                 </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('About')}
                 style={{
-                    height: getSize(50),
-                    width: '100%',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    paddingRight: getSize(30),
-                    paddingLeft: getSize(30),
-                    marginTop: getSize(10),
-                }}
-            >
+                  height: getSize(50),
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  paddingRight: getSize(30),
+                  paddingLeft: getSize(30),
+                  marginTop: getSize(10),
+                }}>
                 <Text
-                    style={{
-                        color: '#fff',
-                        fontSize: getSize(18),
-                        fontWeight: '400',
-                        textAlignVertical: 'center'
-                    }}
-                >
-                    ABOUT
+                  style={{
+                    color: '#fff',
+                    fontSize: getSize(18),
+                    fontWeight: '400',
+                    textAlignVertical: 'center',
+                  }}>
+                  ABOUT
                 </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => this.loggout()}
                 style={{
-                    height: getSize(50),
-                    width: '100%',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    paddingRight: getSize(30),
-                    paddingLeft: getSize(30),
-                    marginTop: getSize(10),
-                }}
-            >
+                  height: getSize(50),
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  paddingRight: getSize(30),
+                  paddingLeft: getSize(30),
+                  marginTop: getSize(10),
+                }}>
                 <Text
-                    style={{
-                        color: '#fff',
-                        fontSize: getSize(18),
-                        fontWeight: '400',
-                        textAlignVertical: 'center'
-                    }}
-                >
-                    LOGOUT
+                  style={{
+                    color: '#fff',
+                    fontSize: getSize(18),
+                    fontWeight: '400',
+                    textAlignVertical: 'center',
+                  }}>
+                  LOGOUT
                 </Text>
-            </TouchableOpacity>
-          </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </ImageBackground>
       </View>

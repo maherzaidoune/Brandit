@@ -7,6 +7,7 @@ import {
 const INITIAL_STATE = {
   isLoggedIn: false,
   isRequesting: false,
+  userId: null
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -15,7 +16,7 @@ export default (state = INITIAL_STATE, action) => {
     case LOGIN_USER:
       return {...state, isRequesting: true, isLoggedIn: false};
     case LOGIN_USER_SUCCESS:
-      return {...state, isRequesting: false, isLoggedIn: true};
+      return {...state, isRequesting: false, isLoggedIn: true, userId: action.payload};
     case LOGIN_USER_FAILED:
       return {...state, isRequesting: false, isLoggedIn: false};
     default:

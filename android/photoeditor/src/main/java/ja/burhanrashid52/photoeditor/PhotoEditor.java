@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -58,7 +57,6 @@ public class PhotoEditor implements BrushViewChangeListener {
     private View template;
 
 
-
     private PhotoEditor(Builder builder) {
         this.context = builder.context;
         this.parentView = builder.parentView;
@@ -74,7 +72,7 @@ public class PhotoEditor implements BrushViewChangeListener {
         redoViews = new ArrayList<>();
     }
 
-    public void addImage(Bitmap desiredImage, boolean isFrame) {
+    public void addImage(Bitmap desiredImage, boolean isFrame, int position) {
         final View imageRootView = getLayout(ViewType.IMAGE);
         final ImageView imageView = imageRootView.findViewById(R.id.imgPhotoEditorImage);
         final FrameLayout frmBorder = imageRootView.findViewById(R.id.frmBorder);
@@ -82,7 +80,7 @@ public class PhotoEditor implements BrushViewChangeListener {
 
         imageView.setImageBitmap(desiredImage);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-        if(!isFrame){
+        if (!isFrame) {
             MultiTouchListener multiTouchListener = getMultiTouchListener();
             multiTouchListener.setOnGestureControl(new MultiTouchListener.OnGestureControl() {
                 @Override
@@ -99,17 +97,21 @@ public class PhotoEditor implements BrushViewChangeListener {
                 }
             });
             imageRootView.setOnTouchListener(multiTouchListener);
-        }
-        else{
-            if(template != null)
-                viewUndo(template, ViewType.IMAGE);
-            //frmBorder.setBackgroundResource(R.drawable.rounded_border_tv);
-            frmBorder.setBackgroundResource(0);
-            imgClose.setVisibility(View.GONE);
-            template = imageRootView;
+            addViewToParent(imageRootView, ViewType.IMAGE);
+        } else {
+            if (position == 0) {
+                clearAllViews();
+            } else {
+                if (template != null)
+                    viewUndo(template, ViewType.IMAGE);
+                //frmBorder.setBackgroundResource(R.drawable.rounded_border_tv);
+                frmBorder.setBackgroundResource(0);
+                imgClose.setVisibility(View.GONE);
+                template = imageRootView;
+                addViewToParent(imageRootView, ViewType.IMAGE);
+            }
         }
 
-        addViewToParent(imageRootView, ViewType.IMAGE);
 
     }
 

@@ -36,6 +36,10 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
         this.Stickers = Stickers;
         this.bitmaps = new ArrayList<>();
     }
+    public StickerBSFragment() {
+
+    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -43,6 +47,8 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                if(Stickers == null || Stickers.size() == 0)
+                    return;
                 for (String s: Stickers) {
                     try {
                         Bitmap bitmap = Glide.with(context).asBitmap().load(s).submit().get();
@@ -65,7 +71,7 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
     }
 
     public interface StickerListener {
-        void onStickerClick(Bitmap bitmap, boolean isFrame);
+        void onStickerClick(Bitmap bitmap, boolean isFrame, int position);
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -134,6 +140,10 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
 
         @Override
         public int getItemCount() {
+            if(stickerList == null){
+                dismiss();
+                return 0;
+            }
             return stickerList.size();
         }
 
@@ -150,7 +160,7 @@ public class StickerBSFragment extends BottomSheetDialogFragment {
                         if (mStickerListener != null) {
 //                            mStickerListener.onStickerClick(
 //                                    BitmapFactory.decodeFile(files.get(getLayoutPosition()).getPath()));
-                             mStickerListener.onStickerClick(bitmaps.get(getLayoutPosition()), false);
+                             mStickerListener.onStickerClick(bitmaps.get(getLayoutPosition()), false, getLayoutPosition());
                         }
                         dismiss();
                     }

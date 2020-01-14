@@ -6,6 +6,8 @@ import MainPage from '../page/MainPage';
 import AppLoadingPage from '../page/AppLoadingPage';
 import LoginPage from '../page/LoginPage';
 import Settings from '../page/Settings';
+import About from '../page/About';
+import ChangePassword from '../page/ChangePassword';
 
 const AppNavigator = createStackNavigator(
     {
@@ -14,6 +16,12 @@ const AppNavigator = createStackNavigator(
       },
         Settings: {
           screen: Settings
+        },
+        About: {
+          screen: About
+        },
+        ChangePass: {
+          screen: ChangePassword
         }
     },
     { navigationOptions: { header: null } }
